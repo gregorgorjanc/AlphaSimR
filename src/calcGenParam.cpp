@@ -370,8 +370,8 @@ Rcpp::List calcGenParam(const Rcpp::S4& trait,
     tid = 0;
 #endif
 
-    arma::vec tmp(1), freq(ploidy+1,arma::fill::zeros), freqE(ploidy+1); // Genotype frequencies, observed and HWE
-    arma::vec freqHetM(ploidy-1,arma::fill::zeros), freqHetME(ploidy-1); // Frequencies of phased heterozygotes, observed and HWE
+    arma::vec tmp(ploidy+1,arma::fill::zeros), freq(ploidy+1,arma::fill::zeros), freqE(ploidy+1); // Genotype frequencies, observed and HWE
+    arma::vec freqHetM(ploidy+1,arma::fill::zeros), freqHetME(ploidy+1); // Frequencies of phased heterozygotes, observed and HWE
     arma::vec aEff(ploidy+1), dEff(ploidy+1); // Genetic values, additive and dominance (imprinting below)
     arma::vec bv(ploidy+1), dd(ploidy+1), gv(ploidy+1); // Statistical values, additive and dominance (imprinting below)
     arma::vec bvE(ploidy+1), ddE(ploidy+1); // Expected for random mating
@@ -388,8 +388,8 @@ Rcpp::List calcGenParam(const Rcpp::S4& trait,
     for(arma::uword j=0; j<nInd; ++j){
       freq(genoMat(j,i)) += 1;
     }
-    tmp = accu(freq);
-    freq = freq/tmp;
+    tmp = freq; // when tmp = accu(tmp) there werea problem due size is not = 1. I replace it to be the same object pre-processed
+    freq = freq/accu(tmp);
     genoMu = accu(freq%x);
     p = genoMu/dP;
     q = 1-p;
@@ -403,7 +403,7 @@ Rcpp::List calcGenParam(const Rcpp::S4& trait,
           // freqHetM(1) is freq of 1-0 (mat-pat) heterozygote
         }
       }
-      freqHetM = freqHetM/tmp;
+      freqHetM = freqHetM/accu(tmp); // there was also a problem due the freqHetM size. I did it equal to freq
     }
 
     // Expected genotype frequencies
@@ -550,61 +550,29 @@ Rcpp::List calcGenParam(const Rcpp::S4& trait,
                               Rcpp::Named("gv_d")=sum(gv_d,1),
                               Rcpp::Named("gv_mu")=intercept);
   }else if(hasS){
-    gv_t = gv_a + gv_d + gv_s;
-    Rcpp::List result(25); // Rcpp::List::create() works up to 20 nodes :(
-    std::vector<std::string> names;
-    names[0] = "gv";
-    result[0] = sum(gv_t,1)+intercept;
-    names[1] = "bv";
-    result[1] = sum(bvMat,1);
-    names[2] = "bvM";
-    result[2] = sum(bvMMat,1);
-    names[3] = "bvP";
-    result[3] = sum(bvPMat,1);
-    names[4] = "dd";
-    result[4] = sum(ddMat,1);
-    names[5] = "idM";
-    result[5] = sum(sdMMat,1);
-    names[6] = "idP";
-    result[6] = sum(sdPMat,1);
-    names[7] = "genicVarA";
-    result[7] = accu(genicA);
-    names[8] = "genicVarAM";
-    result[8] = accu(genicAM);
-    names[9] = "genicVarAP";
-    result[9] = accu(genicAP);
-    names[10] = "genicVarD";
-    result[10] = accu(genicD);
-    names[11] = "genicVarIM";
-    result[11] = accu(genicSM);
-    names[12] = "genicVarIP";
-    result[12] = accu(genicSP);
-    names[13] = "genicVarA2";
-    result[13] = accu(genicA2);
-    names[14] = "genicVarAM2";
-    result[14] = accu(genicAM2);
-    names[15] = "genicVarAP2";
-    result[15] = accu(genicAP2);
-    names[16] = "genicVarD2";
-    result[16] = accu(genicD2);
-    names[17] = "genicVarIM2";
-    result[17] = accu(genicSM2);
-    names[18] = "genicVarIP2";
-    result[18] = accu(genicSP2);
-    names[19] = "mu";
-    result[19] = accu(mu)+intercept;
-    names[20] = "mu_HWE";
-    result[20] = accu(eMu)+intercept;
-    names[21] = "gv_a";
-    result[21] = sum(gv_a,1);
-    names[22] = "gv_d";
-    result[22] = sum(gv_d,1);
-    names[23] = "gv_i";
-    result[23] = sum(gv_s,1);
-    names[24] = "gv_mu";
-    result[24] = intercept;
-    result.attr("names") = Rcpp::wrap(names);
-    return result;
+    gv_t = gv_a + gv_s;  //gv_d causes problem due it is dim(0x0), I also romoved intercept.
+    return Rcpp::List::create(Rcpp::Named("gv")=sum(gv_t,1), //1  //I had a problem with the substitute function
+                              Rcpp::Named("bv")=sum(bvMat,1),     // then, I have used the old one
+                              Rcpp::Named("bvM")=sum(bvMMat,1),   // I have not included the dominance effects and intercept
+                              Rcpp::Named("bvP")=sum(bvPMat,1),
+                              Rcpp::Named("idM")=sum(sdMMat,1),
+                              Rcpp::Named("idP")=sum(sdPMat,1),
+                              Rcpp::Named("genicVarA")=accu(genicA),
+                              Rcpp::Named("genicVarAM")=accu(genicAM),
+                              Rcpp::Named("genicVarAP")=accu(genicAP),
+                              Rcpp::Named("genicVarIM")=accu(genicSM),  //10
+                              Rcpp::Named("genicVarIP")=accu(genicSP),
+                              Rcpp::Named("genicVarA2")=accu(genicA2),
+                              Rcpp::Named("genicVarAM2")=accu(genicAM2),
+                              Rcpp::Named("genicVarAP2")=accu(genicAP2),
+                              Rcpp::Named("genicVarIM2")=accu(genicSM2),
+                              Rcpp::Named("genicVarIP2")=accu(genicSP2),
+                              Rcpp::Named("mu")=accu(mu),
+                              Rcpp::Named("mu_HWE")=accu(eMu),
+                              Rcpp::Named("gv_a")=sum(gv_a,1),
+                              Rcpp::Named("gv_i")=sum(gv_s,1)); //20
+                    
+    
     //Rcpp::Named("genicVarI")=accu(genicS),
     //Rcpp::Named("genicVarI2")=accu(genicS2),
     //Rcpp::Named("gv_iM")=sum(gv_sM,1),
