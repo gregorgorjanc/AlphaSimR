@@ -48,21 +48,20 @@ arma::field<arma::vec> getGvA2(const Rcpp::S4& trait,
   arma::Mat<unsigned char> paternalGeno = getPaternalGeno(Rcpp::as<arma::field<arma::Cube<unsigned char> > >(pop.slot("geno")),
                                                           lociPerChr, lociLoc, nThreads);
 
-//#ifdef _OPENMP
-//#pragma omp parallel for schedule(static) num_threads(nThreads)
-//#endif
-//  for(arma::uword i=0; i<a1.n_elem; ++i){
-arma::uword i=0;
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static) num_threads(nThreads)
+#endif
+  for(arma::uword i=0; i<a1.n_elem; ++i){
     arma::uword tid;
-//#ifdef _OPENMP
-//    tid = omp_get_thread_num();
-//#else
+#ifdef _OPENMP
+    tid = omp_get_thread_num();
+#else
     tid = 0;
-//#endif
+#endif
     arma::vec aEff1,aEff2,dEff,sEffM,sEffP;
     int tmpM,tmpP,tmp;
-    aEff1 = xa*a1(i);
-    aEff2 = xa*a2(i);
+    aEff1 = xa*a1(i)/ploidy; //There was a problem: additive effect was double in diploids because ploidy and genomic dosage was not hadn't been taken into account.
+    aEff2 = xa*a2(i)/ploidy;
     if(hasD){
       dEff = xd*d(i);
     }
@@ -72,8 +71,6 @@ arma::uword i=0;
     }
     for(arma::uword j=0; j<nInd; ++j){
       gv(j,tid) += aEff1(maternalGeno(j,i)) + aEff2(paternalGeno(j,i));
-      output(0) = gv(j,tid);
-      return output;
 
       if(hasD){
         gv(j,tid) += dEff(maternalGeno(j,i)+paternalGeno(j,i));
@@ -86,15 +83,9 @@ arma::uword i=0;
           gv(j,tid) += sEffM(tmp) * double(tmpM) +
                        sEffP(tmp) * double(tmpP);
         }
-        output(0) = sEffM(tmp) * double(tmpM) + sEffP(tmp) * double(tmpP);
-        return output;
-//        output(0) = gv(j,tid);
-//        return output;
-        //gv(j,tid) += sEffM(maternalGeno(j,i) + paternalGeno(j,i)) * maternalGeno(j,i) +
-        //             sEffP(maternalGeno(j,i) + paternalGeno(j,i)) * paternalGeno(j,i);
       }
     }
-//  }
+  }
   output(0) = sum(gv,1);
   return output;
 }

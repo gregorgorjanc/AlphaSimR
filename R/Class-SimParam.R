@@ -650,7 +650,7 @@ SimParam = R6Class(
     #' SP$addTraitAI(1, meanID=0.5)
     #' SP$traits[[1]]@impEff
     #' pop = newPop(founderPop)
-    #' pop[[1]]
+    #' pop@gv
     #' genParam(pop)
     #' gv(pop) - genParam(pop)$gv_a
     #' \dontshow{SP$nThreads = 1L}
