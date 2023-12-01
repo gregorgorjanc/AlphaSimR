@@ -1,0 +1,104 @@
+---
+title: "Imprinting implementation checking"
+author: "López-Carbonell, D."
+date: "2023-12-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+devtools::load_all()
+```
+
+## TraitAI testing
+
+This is an example to test an Additive and Imprinting effect.
+
+Firstly we create a founder Population
+
+```{r}
+founderPop = quickHaplo(nInd=10, nChr=1, segSites=1)
+```
+
+SP object will be created from this founder population and the new addTraitAi function will be used.
+
+```{r pressure, echo=FALSE}
+SP = SimParam$new(founderPop)
+SP$addTraitAI(1, meanID=0.5)
+```
+The output are the different parameters and values that carry out the simulation.
+
+Also newPop function has been modified to create imprinted values if SP object has this info. We are going to use founderPop as a new pop. Then, values obtained in SP$addTraitAI will be obtained (but without intercept).
+
+```{r pressure, }
+pop = newPop(founderPop)
+pop@gv
+pop@gv - SP$traits[[1]]@intercept
+```
+From SP we can obtain the imprinting model values. Remember we are not including dominance.
+
+```{r pressure, }
+addEff <- SP$traits[[1]]@addEff
+impEff <- SP$traits[[1]]@impEff
+intercept <- SP$traits[[1]]@intercept
+```
+
+For calculating genomic values following an imprinted model Maternal and Paternal haplotypes will be required. Genomic data can also be obtained from haplotypes.
+
+```{r pressure, }
+MatHaplo <- pullQtlHaplo(pop = pop, trait = 1, haplo = 1)
+PatHaplo <- pullQtlHaplo(pop = pop, trait = 1, haplo = 2)
+Geno <- pullQtlGeno(pop = pop, trait = 1) #it is also MatHaplo + PatHaplo
+```
+
+Imprinting is only affecting to heterocygous, then they have to be detected and homozygous dosage should be removed in haplotypic data.
+
+```{r pressure, }
+Homozygous <- Geno %%2 == 0
+
+MatHaploHet <- MatHaplo
+MatHaploHet[Homozygous] <- 0
+
+PatHaploHet <- PatHaplo
+PatHaploHet[Homozygous] <- 0
+```
+
+GV = mu + a + maternal imprinting + paternal imprinting 
+Geno have to be codified as -1, 0, 1
+
+```{r pressure, }
+(calculated_gv <- intercept + (Geno -1) %*% addEff + MatHaploHet %*% impEff + PatHaploHet %*% -impEff)
+```
+
+This plot shows the Genomic values using newPop function and our results are the same.
+```{r non.finished.plotting, eval=FALSE}
+plot(calculated_gv, pop@gv, abline(a = 0, b = 1)) 
+
+```
+
+Now we are going to repeat this procedure with a bigger example and it will work properly again. 
+
+```{r}
+founderPop = quickHaplo(nInd=10000, nChr=1, segSites=200)
+SP = SimParam$new(founderPop)
+SP$addTraitAI(200, meanID=0.5)
+pop = newPop(founderPop)
+addEff <- SP$traits[[1]]@addEff
+impEff <- SP$traits[[1]]@impEff
+intercept <- SP$traits[[1]]@intercept
+MatHaplo <- pullQtlHaplo(pop = pop, trait = 1, haplo = 1)
+PatHaplo <- pullQtlHaplo(pop = pop, trait = 1, haplo = 2)
+Geno <- pullQtlGeno(pop = pop, trait = 1)
+
+Homozygous <- Geno %%2 == 0
+
+MatHaploHet <- MatHaplo
+MatHaploHet[Homozygous] <- 0
+
+PatHaploHet <- PatHaplo
+PatHaploHet[Homozygous] <- 0
+
+(calculated_gv <- intercept + (Geno -1) %*% addEff + MatHaploHet %*% impEff + PatHaploHet %*% -impEff)
+
+plot(calculated_gv, pop@gv, abline(a = 0, b = 1)) 
+
+```

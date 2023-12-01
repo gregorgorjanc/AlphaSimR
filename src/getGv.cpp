@@ -18,8 +18,8 @@ arma::field<arma::vec> getGvA2(const Rcpp::S4& trait,
   if(trait.hasSlot("addEffMale")){
     a2 = Rcpp::as<arma::vec>(trait.slot("addEffMale"));
   }else{
-    a2 = a1/ploidy; //There was a problem: additive effect was double in diploids because ploidy and genomic dosage was not hadn't been taken into account.
-    a1 = a1/ploidy;
+    a2 = a1/2; //There was a problem: additive effect was double in diploids because ploidy and genomic dosage was not hadn't been taken into account.
+    a1 = a1/2;
   }
   if(hasD){
     d = Rcpp::as<arma::vec>(trait.slot("domEff"));
