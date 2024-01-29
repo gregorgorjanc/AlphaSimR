@@ -187,7 +187,7 @@ genParam = function(pop,simParam=NULL){
   # Blank nInd x nTrait matrices
   gv = matrix(NA_real_, nrow=nInd, ncol=nTraits)
   colnames(gv) = traitNames
-  bv = bvM = bvP = dd = idM = aa = gv_a = gv_d = gv_i = gv_aa = gv
+  bv = bvM = bvP = dd = id = aa = gv_a = gv_d = gv_i = gv_aa = gv
 
   # Blank nTrait vectors
   genicVarA = rep(NA_real_, nTraits)
@@ -222,14 +222,14 @@ genParam = function(pop,simParam=NULL){
     if(.hasSlot(trait,"impEff")){
       genicVarI[i] = tmp$genicVarI2
       covI_HW[i] = tmp$genicVarI-tmp$genicVarI2
-      idM[,i] = tmp$idM # taking just mat dev since pat dev = - mat dev
+      id[,i] = tmp$id
       gv_i[,i] = tmp$gv_i
       bvM[,i] = tmp$bvM
       bvP[,i] = tmp$bvP
     }else{
       genicVarI[i] = 0
       covI_HW[i] = 0
-      idM[,i] = rep(0,pop@nInd)
+      id[,i] = rep(0,pop@nInd)
       gv_i[,i] = rep(0,pop@nInd)
       bvM[,i] = rep(0,pop@nInd)
       bvP[,i] = rep(0,pop@nInd)
@@ -254,11 +254,11 @@ genParam = function(pop,simParam=NULL){
       covIAA_L[i] = 0
     } else {
       covAD_L[i] = popVar(cbind(bv[,i],dd[,i]))[1,2]
-      covAI_L[i] = popVar(cbind(bv[,i],idM[,i]))[1,2]
-      covDI_L[i] = popVar(cbind(dd[,i],idM[,i]))[1,2]
+      covAI_L[i] = popVar(cbind(bv[,i],id[,i]))[1,2]
+      covDI_L[i] = popVar(cbind(dd[,i],id[,i]))[1,2]
       covAAA_L[i] = popVar(cbind(bv[,i],aa[,i]))[1,2]
       covDAA_L[i] = popVar(cbind(dd[,i],aa[,i]))[1,2]
-      covIAA_L[i] = popVar(cbind(idM[,i],aa[,i]))[1,2]
+      covIAA_L[i] = popVar(cbind(id[,i],aa[,i]))[1,2]
       # TODO: do we need covIMA and covIPA etc.?
       # TODO: do we need covIMA and covIPA etc.?
     }
@@ -272,7 +272,7 @@ genParam = function(pop,simParam=NULL){
   rownames(varD) = colnames(varD) = traitNames
 
   # TODO: do we need varIM and varIP (they are the same in a "random" setting)?
-  varI = popVar(idM)
+  varI = popVar(id)
   rownames(varI) = colnames(varI) = traitNames
 
   varAA = popVar(aa)
@@ -316,7 +316,7 @@ genParam = function(pop,simParam=NULL){
                 bvM=bvM,
                 bvP=bvP,
                 dd=dd,
-                idM=idM,
+                id=id,
                 aa=aa,
                 gv_mu=gv_mu,
                 gv_a=gv_a,
@@ -581,102 +581,34 @@ dd = function(pop,simParam=NULL){
 
 #' @title Imprinting deviations
 #'
-#' @description Returns imprinting deviations for all traits according to the
-#'   sex of individuals.
+#' @description Returns imprinting deviations for all traits
 #'
 #' @param pop an object of \code{\link{Pop-class}}
 #' @param simParam an object of \code{\link{SimParam}}
-#'
+#' 
 #' @details
-#' If \code{sex == "H"} (in many plants) then mean imprinting deviation is returned,
-#' which is 0 be definition.
-#' If \code{sex == "F"} (female) then maternal imprinting deviation is returned.
-#' If \code{sex == "M"} (male)   then paternal imprinting deviation is returned,
-#' which is -(maternal imprinting deviation).
-#'
-#' If you must get maternal or paternal imprinting deviation irrespective of the
-#' sex of individuals, use \code{idM()} and \code{idP()} - see examples.
+#' Imprinting was developed in AlphaSimR under an orthogonal model and imprinting 
+#' deviations becomes the difference between gv and (bv + dd). This differs from
+#' imprinting deviation concept explained in O'Brien EK & Wolf JB (2019) even 
+#' both models are equivalents.
 #'
 #' @examples
 #' #Create founder haplotypes
 #' founderPop = quickHaplo(nInd=10, nChr=1, segSites=10)
 #'
-#' # --- Bisexual individuals ---
 #' #Set simulation parameters
 #' SP = SimParam$new(founderPop)
-#' SP$addTraitAI(10, meanID=0.5)
+#' SP$addTraitADI(10, meanDD=0.75, meanID=0.5)
 #' SP$setVarE(h2=0.5)
 #' \dontshow{SP$nThreads = 1L}
 #'
 #' #Create population
 #' pop = newPop(founderPop, simParam=SP)
-#' pop@sex
-#' # Mean imprinting deviations
-#' # (individuals are bisexual)
-#' (tmp = id(pop, simParam=SP))
-#'
-#' # Maternal imprinting deviations
-#' # (as if individuals are females or for their female sexual organ)
-#' (tmpM = idM(pop, simParam=SP))
-#'
-#' # Paternal imprinting deviations
-#' # (as if individuals are males or for their male sexual organ)
-#' (tmpP = idP(pop, simParam=SP))
-#'
-#' # Compare the values
-#' data.frame(sex = pop@sex, id = tmp[, 1], idM = tmpM[, 1], idP = tmpP[, 1])
-#'
-#' # --- Male and female individuals ---
-#'
-#' #Set simulation parameters
-#' SP = SimParam$new(founderPop)
-#' SP$setSexes("yes_sys")
-#' SP$addTraitAI(10, meanID=0.5)
-#' SP$setVarE(h2=0.5)
-#' \dontshow{SP$nThreads = 1L}
-#'
-#' #Create population
-#' pop = newPop(founderPop, simParam=SP)
-#' pop@sex
-#' # Individual imprinting deviations
-#' # (individuals are either females or males)
-#' (tmp = id(pop, simParam=SP))
-#'
-#' # Maternal imprinting deviations
-#' # (as if individuals are females)
-#' (tmpM = idM(pop, simParam=SP))
-#'
-#' # Paternal imprinting deviations
-#' # (as if individuals are males)
-#' (tmpP = idP(pop, simParam=SP))
-#'
-#' # Compare the values
-#' data.frame(sex = pop@sex, id = tmp[, 1], idM = tmpM[, 1], idP = tmpP[, 1])
-#'
+#' id(pop, simParam=SP)
+#' 
 #' @export
 id = function(pop,simParam=NULL){
-  ret = idM(pop,simParam=simParam)
-  sel = pop@sex %in% "H"
-  if(any(sel)){
-    ret[sel, ] = 0 # for bisexual use mean imp dev = 0
-  }
-  sel = pop@sex %in% "M" # for males use pat imp dev
-  if(any(sel)){
-    ret[sel, ] = -ret[sel, ] # pat imp dev = - mat imp dev
-  }
-  return(ret)
-}
-
-#' @describeIn id Maternal imprinting deviations
-#' @export
-idM = function(pop,simParam=NULL){
-  genParam(pop,simParam=simParam)$idM
-}
-
-#' @describeIn id Paternal imprinting deviations
-#' @export
-idP = function(pop,simParam=NULL){
-  -genParam(pop,simParam=simParam)$idM
+  genParam(pop,simParam=simParam)$id
 }
 
 #' @title Additive-by-additive epistatic deviations
