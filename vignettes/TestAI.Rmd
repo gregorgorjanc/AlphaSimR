@@ -1,0 +1,183 @@
+---
+title: "Imprinting implementation checking"
+author: "López-Carbonell, D."
+date: "2023-12-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+devtools::load_all()
+```
+
+## TraitAI testing
+
+This is an example to test an Additive and Imprinting effect.
+
+Firstly we create a founder Population
+
+```{r}
+founderPop = quickHaplo(nInd=10, nChr=1, segSites=1)
+```
+
+SP object will be created from this founder population and the new addTraitAi function will be used.
+
+```{r pressure, echo=FALSE}
+SP = SimParam$new(founderPop)
+SP$addTraitAI(1, meanID=0.5)
+```
+
+The output are the different parameters and values that carry out the simulation.
+
+Also newPop function has been modified to create imprinted values if SP object has this info. We are going to use founderPop as a new pop. Then, values obtained in SP\$addTraitAI will be obtained (but without intercept).
+
+```{r pressure, }
+pop = newPop(founderPop)
+pop@gv
+pop@gv - SP$traits[[1]]@intercept
+```
+
+From SP we can obtain the imprinting model values. Remember we are not including dominance.
+
+```{r pressure, }
+addEff <- SP$traits[[1]]@addEff
+impEff <- SP$traits[[1]]@impEff
+intercept <- SP$traits[[1]]@intercept
+
+while (impEff < 0 || addEff < 0) {
+  SP = SimParam$new(founderPop)
+  SP$addTraitAI(1, meanID = 0.5)
+  pop = newPop(founderPop)
+  addEff <- SP$traits[[1]]@addEff
+  impEff <- SP$traits[[1]]@impEff
+  intercept <- SP$traits[[1]]@intercept
+}
+```
+
+For calculating genomic values following an imprinted model Maternal and Paternal haplotypes will be required. Genomic data can also be obtained from haplotypes.
+
+```{r pressure, }
+MatHaplo <- pullQtlHaplo(pop = pop, trait = 1, haplo = 1)
+PatHaplo <- pullQtlHaplo(pop = pop, trait = 1, haplo = 2)
+Geno <- pullQtlGeno(pop = pop, trait = 1) #it is also MatHaplo + PatHaplo
+```
+
+Imprinting is only affecting to heterocygous, then they have to be detected and homozygous dosage should be removed in haplotypic data.
+
+```{r pressure, }
+Homozygous <- Geno %%2 == 0
+
+MatHaploHet <- MatHaplo
+MatHaploHet[Homozygous] <- 0
+
+PatHaploHet <- PatHaplo
+PatHaploHet[Homozygous] <- 0
+```
+
+GV = mu + a + maternal imprinting + paternal imprinting Geno have to be codified as -1, 0, 1
+
+```{r pressure, }
+(calculated_gv <- intercept + (Geno -1) %*% addEff + MatHaploHet %*% -impEff + PatHaploHet %*% impEff)
+```
+
+This plot shows the Genomic values using newPop function and our results are the same.
+
+```{r non.finished.plotting, eval=FALSE}
+plot(calculated_gv, pop@gv, abline(a = 0, b = 1)) 
+
+```
+
+We are going to prepare a graphical representation of the Imprinting Model, following <https://doi.org/10.1534/genetics.118.301373>. To do that, Genotypic Values will be stored in `table_gvs`. Furthermore, genotypes will be presented in 00, 01, 10 & 11 and A2A2, A1A2, A2A1 & A1A1 notation.
+
+```{r}
+Geno_cod <-  paste(MatHaplo, PatHaplo, sep = "") #codifiyng genotypes as 00, 01, 10, 11
+gvs = as.data.frame(cbind(gv(pop), Geno_cod))
+colnames(gvs) <- c("GV", "Genotype")
+table_gvs <- unique(gvs)
+table_gvs$GV <- as.numeric(table_gvs$GV)
+(table_gvs <- table_gvs[order(table_gvs$GV),])
+table_gvs$Genotype_2 <- c("A2A2", "A1A2", "A2A1", "A1A1")
+table_gvs$Value <- c("-a", "d-i", "d+i", "a")
+```
+
+Once values storaged, the plot is represented.
+
+```{r}
+plot(x = table_gvs$GV, y = rep(1,4), type = "l", ylab = "", xlab = "Genotypic value", yaxt = "n") +
+  points(x = table_gvs$GV,y = rep(1,4), col = "salmon", pch = 18, cex = 2.5) +
+  text(x = table_gvs$GV, y = rep(1.2,4), labels = table_gvs$Genotype, cex = 1.5) +
+  text(x = table_gvs$GV, y = rep(0.85,4), labels = table_gvs$Genotype_2, cex = 1) +
+  text(x = table_gvs$GV, y = rep(0.7,4), labels = table_gvs$Value, cex = 1)
+```
+
+Also Falconer's Fig. 7.2. is recreated including under Imprinting model. To do that, Genotypic Values and Breeding Values are stored.
+
+```{r}
+bvs = as.data.frame(cbind(gv(pop), bv(pop), bvM(pop), bvP(pop)))
+colnames(bvs) <- c("GV","BV","BVM","BVP")
+table_bvs <- unique(bvs)
+table_bvs$GV <- as.numeric(table_bvs$GV)
+table_bvs$BV <- as.numeric(table_bvs$BV)
+table_bvs$BVM <- as.numeric(table_bvs$BVM)
+table_bvs$BVP <- as.numeric(table_bvs$BVP)
+(table_bvs <- table_bvs[order(table_bvs$BV), ])
+```
+
+```{r}
+y_range<- range(c(table_bvs$GV,table_bvs$BV,table_bvs$BVM,table_bvs$BVP))
+
+plot(x = c(1:3), y = unique(table_bvs$BV), type = "l", xlab = "Genotypic value", lwd = 2.5, col= "darkolivegreen3", ylim = y_range) +
+  points(x = c(1:3), y = unique(table_bvs$BV), col = "darkolivegreen3", pch = 18, cex = 2.5) +
+  lines(x = c(1:3),y = unique(table_bvs$BVM), col = "salmon", lwd = 2.5) +
+  points(x = c(1:3), y = unique(table_bvs$BVM), col = "salmon", pch = 18, cex = 2.5) +
+  lines(x = c(1:3),y = unique(table_bvs$BVP), col = "cornflowerblue", lwd = 2.5)+
+  points(x = c(1:3), y = unique(table_bvs$BVP), col = "cornflowerblue", pch = 18, cex = 2.5) +
+  lines(x = c(1,1),y = c(unique(table_bvs$BV)[1],unique(table_bvs$BVP)[1]), col = "deeppink", lwd = 2.5)+
+  lines(x = c(2,2),y = c(unique(table_bvs$BV)[2],unique(table_bvs$BVP)[2]), col = "deeppink", lwd = 2.5)+
+  lines(x = c(3,3),y = c(unique(table_bvs$BV)[3],unique(table_bvs$BVP)[3]), col = "deeppink", lwd = 2.5)+
+  lines(x = c(1,2),y = c(unique(table_bvs$BV)[1],unique(table_bvs$BV)[1]), col = "cyan4", lwd = 2.5, lty = 5)+
+  lines(x = c(2,2),y = c(unique(table_bvs$BV)[1],unique(table_bvs$BV)[2]), col = "cyan4", lwd = 2.5, lty = 5)+
+  lines(x = c(3,2.01),y = c(unique(table_bvs$BVM)[3],unique(table_bvs$BVM)[3]), col = "darkgoldenrod", lwd = 2.5, lty = 5)+
+  lines(x = c(2.01,2.01),y = c(unique(table_bvs$BVM)[2],unique(table_bvs$BVM)[3]), col = "darkgoldenrod", lwd = 2.5, lty = 5)+
+  lines(x = c(3,1.99),y = c(unique(table_bvs$BVP)[3],unique(table_bvs$BVP)[3]), col = "aquamarine3", lwd = 2.5, lty = 5)+
+  lines(x = c(1.99,1.99),y = c(unique(table_bvs$BVP)[2],unique(table_bvs$BVP)[3]), col = "aquamarine3", lwd = 2.5, lty = 5)+
+  legend("topleft", legend=c("BV_all", "BV_M", "BV_P", "Imp dev", 
+                        expression(paste(alpha,"_all",sep = "")),
+                        expression(paste(alpha,"_M",sep = "")),
+                        expression(paste(alpha,"_P",sep = ""))),  
+       fill = c("darkolivegreen3","salmon","cornflowerblue",
+                "deeppink","cyan4","darkgoldenrod","aquamarine3"),
+       bty="n"
+)
+
+```
+
+Now we are going to repeat this procedure with a bigger example and it will work properly again.
+
+```{r}
+founderPop = quickHaplo(nInd = 10000,
+                        nChr = 1,
+                        segSites = 200)
+SP = SimParam$new(founderPop)
+SP$addTraitAI(200, meanID = 0.5)
+pop = newPop(founderPop)
+addEff <- SP$traits[[1]]@addEff
+impEff <- SP$traits[[1]]@impEff
+intercept <- SP$traits[[1]]@intercept
+MatHaplo <- pullQtlHaplo(pop = pop, trait = 1, haplo = 1)
+PatHaplo <- pullQtlHaplo(pop = pop, trait = 1, haplo = 2)
+Geno <- pullQtlGeno(pop = pop, trait = 1)
+
+Homozygous <- Geno %% 2 == 0
+
+MatHaploHet <- MatHaplo
+MatHaploHet[Homozygous] <- 0
+
+PatHaploHet <- PatHaplo
+PatHaploHet[Homozygous] <- 0
+
+calculated_gv <-
+    intercept + (Geno - 1) %*% addEff + + MatHaploHet %*% -impEff + PatHaploHet %*% impEff
+
+plot(calculated_gv, pop@gv, abline(a = 0, b = 1)) 
+
+```

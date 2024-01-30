@@ -276,7 +276,7 @@ importHaplo = function(haplo, genMap, ploidy=2L, ped=NULL){
       genMap[[i]] = genMap[[i]] - genMap[[i]]-genMap[[i]][1]
       take = na.omit(take)
     }
-    haplotypes[[i]] = haplo[,take]
+    haplotypes[[i]] = as.matrix(haplo[,take])
   }
   
   founderPop = newMapPop(genMap=genMap,

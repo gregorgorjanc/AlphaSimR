@@ -94,27 +94,18 @@ test_that("addTraitAI",{
   expect_equal(unname(ans$genicVarG),2,tolerance=1e-6)
   gv_a = c(-SP$traits[[1]]@addEff,0,0,SP$traits[[1]]@addEff)
   gv_i = c(0,SP$traits[[1]]@impEff,-SP$traits[[1]]@impEff,0)
-  idM = c(+SP$traits[[1]]@impEff, 0, 0, -SP$traits[[1]]@impEff)
-  # +2pi, (p-q)i, (p-q)i, -2qi --> with p=q=0.5 --> +i, 0, 0, -i
-  idP = c(-SP$traits[[1]]@impEff, 0, 0, +SP$traits[[1]]@impEff)
-  # -2pi, (q-p)i, (q-p)i, +2qi --> with p=q=0.5 --> -i, 0, 0, +i
   expect_equal(unname(c(ans$gv_a)),gv_a,tolerance=1e-6)
   expect_equal(unname(c(ans$gv_i)),gv_i,tolerance=1e-6)
   expect_equal(unname(c(ans$gv)),gv_a+gv_i,tolerance=1e-6)
   expect_equal(unname(c(ans$bv)),gv_a,tolerance=1e-6)
-  expect_equal(unname(c(ans$idM)),idM,tolerance=1e-6)
-  expect_equal(unname(c(ans$bvM)),unname(c(ans$bv))+idM,tolerance=1e-6)
-  expect_equal(unname(c(ans$bvP)),unname(c(ans$bv))+idP,tolerance=1e-6)
   # Test logic of how bv() and id() interact with sex
   expect_equal(bv(pop),ans$bv,tolerance=1e-6)
   expect_equal(bvM(pop),ans$bvM,tolerance=1e-6)
   expect_equal(bvP(pop),ans$bvP,tolerance=1e-6)
   pop@sex[] = "M"
   expect_equal(bv(pop),ans$bvP,tolerance=1e-6)
-  expect_equal(unname(c(id(pop))),idP,tolerance=1e-6)
   pop@sex[] = "F"
   expect_equal(bv(pop),ans$bvM,tolerance=1e-6)
-  expect_equal(unname(c(id(pop))),idM,tolerance=1e-6)
 })
 
 #Population with 2 individuals, 1 chromosome and 2 QTL
