@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">AlphaSimR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,7 @@
                         <h4 data-toc-skip class="author">Rosalind
 Craddock</h4>
             
-            <h4 data-toc-skip class="date">2025-10-03</h4>
+            <h4 data-toc-skip class="date">2025-12-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/gaynorr/AlphaSimR/blob/master/vignettes/articles/Genome.Rmd" class="external-link"><code>vignettes/articles/Genome.Rmd</code></a></small>
       <div class="d-none name"><code>Genome.Rmd</code></div>
@@ -153,16 +153,16 @@ the allele dosage will be randomly assigned.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pullSegSiteGeno.html">pullSegSiteGeno</a></span><span class="op">(</span><span class="va">founderGenome</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    1_1 1_2 1_3 1_4 2_1 2_2 2_3 2_4 3_1 3_2 3_3 3_4</span></span>
-<span><span class="co">#&gt; 1    2   0   0   2   1   1   2   1   2   0   2   0</span></span>
-<span><span class="co">#&gt; 2    1   0   0   1   0   0   2   0   1   0   0   0</span></span>
-<span><span class="co">#&gt; 3    1   0   1   0   0   2   2   0   1   0   1   1</span></span>
-<span><span class="co">#&gt; 4    1   0   0   1   0   1   2   1   2   0   1   1</span></span>
-<span><span class="co">#&gt; 5    0   2   0   0   1   1   1   0   2   1   2   0</span></span>
-<span><span class="co">#&gt; 6    0   1   0   0   1   2   1   0   1   0   2   0</span></span>
-<span><span class="co">#&gt; 7    1   1   0   1   0   0   2   1   2   0   1   0</span></span>
-<span><span class="co">#&gt; 8    2   0   1   2   1   1   2   2   1   1   1   0</span></span>
-<span><span class="co">#&gt; 9    1   2   0   1   0   1   2   1   1   0   2   0</span></span>
-<span><span class="co">#&gt; 10   0   1   0   0   1   2   2   1   1   0   2   0</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    0   0   0   0   1   1   2   1   2   0   2   0</span></span>
+<span><span class="co">#&gt; 2    0   1   1   0   0   0   2   0   1   0   0   0</span></span>
+<span><span class="co">#&gt; 3    0   2   2   1   0   2   2   0   1   0   1   1</span></span>
+<span><span class="co">#&gt; 4    0   1   1   0   0   1   2   1   2   0   1   1</span></span>
+<span><span class="co">#&gt; 5    0   2   1   0   1   1   1   0   2   1   2   0</span></span>
+<span><span class="co">#&gt; 6    1   1   1   0   1   2   1   0   1   0   2   0</span></span>
+<span><span class="co">#&gt; 7    0   1   1   1   0   0   2   1   2   0   1   0</span></span>
+<span><span class="co">#&gt; 8    0   2   2   1   1   1   2   2   1   1   1   0</span></span>
+<span><span class="co">#&gt; 9    0   2   2   1   0   1   2   1   1   0   2   0</span></span>
+<span><span class="co">#&gt; 10   0   2   0   0   1   2   2   1   1   0   2   0</span></span></code></pre></div>
 <p>The haplotypes can be observed with <code>pullSegSiteHaplo</code>.
 Each row represents the sequence of alleles on each chromosome per
 individual. Since this is diploid, we observe two for each individual:
@@ -172,25 +172,25 @@ each column represents a defined loci.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pullSegSiteHaplo.html">pullSegSiteHaplo</a></span><span class="op">(</span><span class="va">founderGenome</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      1_1 1_2 1_3 1_4 2_1 2_2 2_3 2_4 3_1 3_2 3_3 3_4</span></span>
-<span><span class="co">#&gt; 1_1    1   0   0   1   1   1   1   1   1   0   1   0</span></span>
-<span><span class="co">#&gt; 1_2    1   0   0   1   0   0   1   0   1   0   1   0</span></span>
+<span><span class="co">#&gt; 1_1    0   0   0   0   1   1   1   1   1   0   1   0</span></span>
+<span><span class="co">#&gt; 1_2    0   0   0   0   0   0   1   0   1   0   1   0</span></span>
 <span><span class="co">#&gt; 2_1    0   0   0   0   0   0   1   0   1   0   0   0</span></span>
-<span><span class="co">#&gt; 2_2    1   0   0   1   0   0   1   0   0   0   0   0</span></span>
-<span><span class="co">#&gt; 3_1    1   0   1   0   0   1   1   0   0   0   1   0</span></span>
-<span><span class="co">#&gt; 3_2    0   0   0   0   0   1   1   0   1   0   0   1</span></span>
+<span><span class="co">#&gt; 2_2    0   1   1   0   0   0   1   0   0   0   0   0</span></span>
+<span><span class="co">#&gt; 3_1    0   1   1   0   0   1   1   0   0   0   1   0</span></span>
+<span><span class="co">#&gt; 3_2    0   1   1   1   0   1   1   0   1   0   0   1</span></span>
 <span><span class="co">#&gt; 4_1    0   0   0   0   0   1   1   0   1   0   1   0</span></span>
-<span><span class="co">#&gt; 4_2    1   0   0   1   0   0   1   1   1   0   0   1</span></span>
+<span><span class="co">#&gt; 4_2    0   1   1   0   0   0   1   1   1   0   0   1</span></span>
 <span><span class="co">#&gt; 5_1    0   1   0   0   0   0   1   0   1   0   1   0</span></span>
-<span><span class="co">#&gt; 5_2    0   1   0   0   1   1   0   0   1   1   1   0</span></span>
-<span><span class="co">#&gt; 6_1    0   0   0   0   1   1   0   0   1   0   1   0</span></span>
-<span><span class="co">#&gt; 6_2    0   1   0   0   0   1   1   0   0   0   1   0</span></span>
-<span><span class="co">#&gt; 7_1    1   0   0   1   0   0   1   1   1   0   0   0</span></span>
+<span><span class="co">#&gt; 5_2    0   1   1   0   1   1   0   0   1   1   1   0</span></span>
+<span><span class="co">#&gt; 6_1    1   0   0   0   1   1   0   0   1   0   1   0</span></span>
+<span><span class="co">#&gt; 6_2    0   1   1   0   0   1   1   0   0   0   1   0</span></span>
+<span><span class="co">#&gt; 7_1    0   0   1   1   0   0   1   1   1   0   0   0</span></span>
 <span><span class="co">#&gt; 7_2    0   1   0   0   0   0   1   0   1   0   1   0</span></span>
-<span><span class="co">#&gt; 8_1    1   0   1   1   1   0   1   1   0   1   0   0</span></span>
-<span><span class="co">#&gt; 8_2    1   0   0   1   0   1   1   1   1   0   1   0</span></span>
-<span><span class="co">#&gt; 9_1    1   1   0   1   0   1   1   0   1   0   1   0</span></span>
-<span><span class="co">#&gt; 9_2    0   1   0   0   0   0   1   1   0   0   1   0</span></span>
-<span><span class="co">#&gt; 10_1   0   0   0   0   0   1   1   0   0   0   1   0</span></span>
+<span><span class="co">#&gt; 8_1    0   1   1   0   1   0   1   1   0   1   0   0</span></span>
+<span><span class="co">#&gt; 8_2    0   1   1   1   0   1   1   1   1   0   1   0</span></span>
+<span><span class="co">#&gt; 9_1    0   1   1   0   0   1   1   0   1   0   1   0</span></span>
+<span><span class="co">#&gt; 9_2    0   1   1   1   0   0   1   1   0   0   1   0</span></span>
+<span><span class="co">#&gt; 10_1   0   1   0   0   0   1   1   0   0   0   1   0</span></span>
 <span><span class="co">#&gt; 10_2   0   1   0   0   1   1   1   1   1   0   1   0</span></span></code></pre></div>
 </div>
 </div>
@@ -238,29 +238,29 @@ at a much higher rate than would be expected.</li>
 <span></span>
 <span><span class="fu"><a href="../reference/pullSegSiteGeno.html">pullSegSiteGeno</a></span><span class="op">(</span><span class="va">basePop</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    1_1 1_2 1_3 1_4 2_1 2_2 2_3 2_4 3_1 3_2 3_3 3_4</span></span>
-<span><span class="co">#&gt; 1    2   0   0   2   1   1   2   1   2   0   2   0</span></span>
-<span><span class="co">#&gt; 2    1   0   0   1   0   0   2   0   1   0   0   0</span></span>
-<span><span class="co">#&gt; 3    1   0   1   0   0   2   2   0   1   0   1   1</span></span>
-<span><span class="co">#&gt; 4    1   0   0   1   0   1   2   1   2   0   1   1</span></span>
-<span><span class="co">#&gt; 5    0   2   0   0   1   1   1   0   2   1   2   0</span></span>
-<span><span class="co">#&gt; 6    0   1   0   0   1   2   1   0   1   0   2   0</span></span>
-<span><span class="co">#&gt; 7    1   1   0   1   0   0   2   1   2   0   1   0</span></span>
-<span><span class="co">#&gt; 8    2   0   1   2   1   1   2   2   1   1   1   0</span></span>
-<span><span class="co">#&gt; 9    1   2   0   1   0   1   2   1   1   0   2   0</span></span>
-<span><span class="co">#&gt; 10   0   1   0   0   1   2   2   1   1   0   2   0</span></span>
+<span><span class="co">#&gt; 1    0   0   0   0   1   1   2   1   2   0   2   0</span></span>
+<span><span class="co">#&gt; 2    0   1   1   0   0   0   2   0   1   0   0   0</span></span>
+<span><span class="co">#&gt; 3    0   2   2   1   0   2   2   0   1   0   1   1</span></span>
+<span><span class="co">#&gt; 4    0   1   1   0   0   1   2   1   2   0   1   1</span></span>
+<span><span class="co">#&gt; 5    0   2   1   0   1   1   1   0   2   1   2   0</span></span>
+<span><span class="co">#&gt; 6    1   1   1   0   1   2   1   0   1   0   2   0</span></span>
+<span><span class="co">#&gt; 7    0   1   1   1   0   0   2   1   2   0   1   0</span></span>
+<span><span class="co">#&gt; 8    0   2   2   1   1   1   2   2   1   1   1   0</span></span>
+<span><span class="co">#&gt; 9    0   2   2   1   0   1   2   1   1   0   2   0</span></span>
+<span><span class="co">#&gt; 10   0   2   0   0   1   2   2   1   1   0   2   0</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/pullSegSiteGeno.html">pullSegSiteGeno</a></span><span class="op">(</span><span class="va">mutatedBasePop</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    1_1 1_2 1_3 1_4 2_1 2_2 2_3 2_4 3_1 3_2 3_3 3_4</span></span>
-<span><span class="co">#&gt; 1    2   0   1   1   1   2   2   1   1   1   2   0</span></span>
-<span><span class="co">#&gt; 2    1   1   0   1   0   0   2   0   1   1   0   1</span></span>
-<span><span class="co">#&gt; 3    1   0   1   1   0   2   2   0   2   0   1   1</span></span>
-<span><span class="co">#&gt; 4    0   0   1   2   0   0   2   2   2   0   1   2</span></span>
-<span><span class="co">#&gt; 5    0   2   0   0   0   1   1   0   2   1   2   0</span></span>
-<span><span class="co">#&gt; 6    0   0   0   1   2   2   1   0   1   1   2   0</span></span>
-<span><span class="co">#&gt; 7    1   1   0   1   0   0   2   1   2   0   1   0</span></span>
-<span><span class="co">#&gt; 8    2   0   1   2   1   1   1   2   1   1   1   1</span></span>
-<span><span class="co">#&gt; 9    1   2   0   2   0   1   1   1   1   0   2   0</span></span>
-<span><span class="co">#&gt; 10   2   1   0   0   1   1   2   1   0   0   2   1</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    0   0   1   1   1   2   2   1   1   1   2   0</span></span>
+<span><span class="co">#&gt; 2    0   2   1   0   0   0   2   0   1   1   0   1</span></span>
+<span><span class="co">#&gt; 3    0   2   2   2   0   2   2   0   2   0   1   1</span></span>
+<span><span class="co">#&gt; 4    1   1   0   1   0   0   2   2   2   0   1   2</span></span>
+<span><span class="co">#&gt; 5    0   2   1   0   0   1   1   0   2   1   2   0</span></span>
+<span><span class="co">#&gt; 6    1   0   1   1   2   2   1   0   1   1   2   0</span></span>
+<span><span class="co">#&gt; 7    0   1   1   1   0   0   2   1   2   0   1   0</span></span>
+<span><span class="co">#&gt; 8    0   2   2   1   1   1   1   2   1   1   1   1</span></span>
+<span><span class="co">#&gt; 9    0   2   2   0   0   1   1   1   1   0   2   0</span></span>
+<span><span class="co">#&gt; 10   2   2   0   0   1   1   2   1   0   0   2   1</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Independent assortment and recombination can be observed across
 generations.</li>
@@ -297,9 +297,9 @@ create one cross, producing a pair of full siblings.</p>
 <span><span class="co">#&gt;   ..@ ploidy : int 2</span></span>
 <span><span class="co">#&gt;   ..@ nLoci  : int [1:3] 4 4 4</span></span>
 <span><span class="co">#&gt;   ..@ geno   :List of 3</span></span>
-<span><span class="co">#&gt;   .. ..$ : raw [1, 1:2, 1:2] 09 00 09 00</span></span>
-<span><span class="co">#&gt;   .. ..$ : raw [1, 1:2, 1:2] 0c 03 0c 06</span></span>
-<span><span class="co">#&gt;   .. ..$ : raw [1, 1:2, 1:2] 09 05 09 05</span></span>
+<span><span class="co">#&gt;   .. ..$ : raw [1, 1:2, 1:2] 06 01 06 05</span></span>
+<span><span class="co">#&gt;   .. ..$ : raw [1, 1:2, 1:2] 06 03 06 03</span></span>
+<span><span class="co">#&gt;   .. ..$ : raw [1, 1:2, 1:2] 05 05 05 04</span></span>
 <span></span>
 <span><span class="co"># Collect the iid for mother and father</span></span>
 <span><span class="va">mother</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">secondGenPop</span><span class="op">@</span><span class="va">mother</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
@@ -314,19 +314,19 @@ recombination.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pullSegSiteHaplo.html">pullSegSiteHaplo</a></span><span class="op">(</span><span class="va">basePop</span><span class="op">[</span><span class="va">basePop</span><span class="op">@</span><span class="va">iid</span> <span class="op">==</span> <span class="va">mother</span>,<span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     1_1 1_2 1_3 1_4 2_1 2_2 2_3 2_4 3_1 3_2 3_3 3_4</span></span>
 <span><span class="co">#&gt; 4_1   0   0   0   0   0   1   1   0   1   0   1   0</span></span>
-<span><span class="co">#&gt; 4_2   1   0   0   1   0   0   1   1   1   0   0   1</span></span></code></pre></div>
+<span><span class="co">#&gt; 4_2   0   1   1   0   0   0   1   1   1   0   0   1</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pullSegSiteHaplo.html">pullSegSiteHaplo</a></span><span class="op">(</span><span class="va">basePop</span><span class="op">[</span><span class="va">basePop</span><span class="op">@</span><span class="va">iid</span> <span class="op">==</span> <span class="va">father</span>,<span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     1_1 1_2 1_3 1_4 2_1 2_2 2_3 2_4 3_1 3_2 3_3 3_4</span></span>
-<span><span class="co">#&gt; 6_1   0   0   0   0   1   1   0   0   1   0   1   0</span></span>
-<span><span class="co">#&gt; 6_2   0   1   0   0   0   1   1   0   0   0   1   0</span></span></code></pre></div>
+<span><span class="co">#&gt; 6_1   1   0   0   0   1   1   0   0   1   0   1   0</span></span>
+<span><span class="co">#&gt; 6_2   0   1   1   0   0   1   1   0   0   0   1   0</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pullSegSiteHaplo.html">pullSegSiteHaplo</a></span><span class="op">(</span><span class="va">secondGenPop</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      1_1 1_2 1_3 1_4 2_1 2_2 2_3 2_4 3_1 3_2 3_3 3_4</span></span>
-<span><span class="co">#&gt; 11_1   1   0   0   1   0   0   1   1   1   0   0   1</span></span>
-<span><span class="co">#&gt; 11_2   0   0   0   0   1   1   0   0   1   0   1   0</span></span>
-<span><span class="co">#&gt; 12_1   1   0   0   1   0   0   1   1   1   0   0   1</span></span>
-<span><span class="co">#&gt; 12_2   0   0   0   0   0   1   1   0   1   0   1   0</span></span></code></pre></div>
+<span><span class="co">#&gt; 11_1   0   1   1   0   0   1   1   0   1   0   1   0</span></span>
+<span><span class="co">#&gt; 11_2   1   0   0   0   1   1   0   0   1   0   1   0</span></span>
+<span><span class="co">#&gt; 12_1   0   1   1   0   0   1   1   0   1   0   1   0</span></span>
+<span><span class="co">#&gt; 12_2   1   0   1   0   1   1   0   0   0   0   1   0</span></span></code></pre></div>
 <p>In the above, independent assortment will always be observed. This is
 clear since despite being full siblings they inherit a different
 arrangement of haplotypes from the mother and the father. We may observe
@@ -348,10 +348,10 @@ recombination, please see the vignette on Recombination.</p>
 <span><span class="co">#&gt; 6_2  12  12  12  12  12  12  12  12  12  12  12  12</span></span>
 <span><span class="fu"><a href="../reference/pullIbdHaplo.html">pullIbdHaplo</a></span><span class="op">(</span><span class="va">secondGenPop</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      1_1 1_2 1_3 1_4 2_1 2_2 2_3 2_4 3_1 3_2 3_3 3_4</span></span>
-<span><span class="co">#&gt; 11_1   8   8   8   8   8   8   8   8   7   7   8   8</span></span>
-<span><span class="co">#&gt; 11_2  11  11  12  12  11  11  11  11  11  11  11  11</span></span>
-<span><span class="co">#&gt; 12_1   8   7   8   8   8   8   7   8   7   7   8   8</span></span>
-<span><span class="co">#&gt; 12_2  11  11  12  12  12  12  12  12  11  12  12  11</span></span></code></pre></div>
+<span><span class="co">#&gt; 11_1   8   8   8   8   7   7   7   7   7   7   7   7</span></span>
+<span><span class="co">#&gt; 11_2  11  11  11  11  11  11  11  11  11  12  11  11</span></span>
+<span><span class="co">#&gt; 12_1   8   8   8   8   8   7   7   7   7   7   7   7</span></span>
+<span><span class="co">#&gt; 12_2  11  11  12  12  11  11  11  11  12  11  11  11</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -401,63 +401,63 @@ used.</p>
 <code class="sourceCode R"><span><span class="co"># From SNP</span></span>
 <span><span class="va">SNP</span> <span class="op">=</span> <span class="fu"><a href="../reference/pullSnpGeno.html">pullSnpGeno</a></span><span class="op">(</span>pop <span class="op">=</span> <span class="va">basePop</span>, snpChip <span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">SNP</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    1_2 2_2 3_4</span></span>
-<span><span class="co">#&gt; 1    0   0   1</span></span>
-<span><span class="co">#&gt; 2    1   2   0</span></span>
-<span><span class="co">#&gt; 3    1   1   1</span></span>
-<span><span class="co">#&gt; 4    1   2   0</span></span>
-<span><span class="co">#&gt; 5    0   1   1</span></span>
-<span><span class="co">#&gt; 6    1   1   0</span></span>
-<span><span class="co">#&gt; 7    0   1   0</span></span>
-<span><span class="co">#&gt; 8    2   0   0</span></span>
-<span><span class="co">#&gt; 9    1   0   1</span></span>
-<span><span class="co">#&gt; 10   1   1   1</span></span>
+<span><span class="co">#&gt;    1_3 2_3 3_4</span></span>
+<span><span class="co">#&gt; 1    1   1   1</span></span>
+<span><span class="co">#&gt; 2    2   1   1</span></span>
+<span><span class="co">#&gt; 3    1   2   2</span></span>
+<span><span class="co">#&gt; 4    2   0   2</span></span>
+<span><span class="co">#&gt; 5    2   2   1</span></span>
+<span><span class="co">#&gt; 6    1   0   1</span></span>
+<span><span class="co">#&gt; 7    2   0   1</span></span>
+<span><span class="co">#&gt; 8    1   1   1</span></span>
+<span><span class="co">#&gt; 9    2   0   1</span></span>
+<span><span class="co">#&gt; 10   2   1   0</span></span>
 <span></span>
 <span><span class="co"># From marker</span></span>
 <span><span class="va">location</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">SNP</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/pullMarkerGeno.html">pullMarkerGeno</a></span><span class="op">(</span><span class="va">basePop</span>, markers <span class="op">=</span> <span class="va">location</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    1_2 2_2 3_4</span></span>
-<span><span class="co">#&gt; 1    0   0   1</span></span>
-<span><span class="co">#&gt; 2    1   2   0</span></span>
-<span><span class="co">#&gt; 3    1   1   1</span></span>
-<span><span class="co">#&gt; 4    1   2   0</span></span>
-<span><span class="co">#&gt; 5    0   1   1</span></span>
-<span><span class="co">#&gt; 6    1   1   0</span></span>
-<span><span class="co">#&gt; 7    0   1   0</span></span>
-<span><span class="co">#&gt; 8    2   0   0</span></span>
-<span><span class="co">#&gt; 9    1   0   1</span></span>
-<span><span class="co">#&gt; 10   1   1   1</span></span></code></pre></div>
+<span><span class="co">#&gt;    1_3 2_3 3_4</span></span>
+<span><span class="co">#&gt; 1    1   1   1</span></span>
+<span><span class="co">#&gt; 2    2   1   1</span></span>
+<span><span class="co">#&gt; 3    1   2   2</span></span>
+<span><span class="co">#&gt; 4    2   0   2</span></span>
+<span><span class="co">#&gt; 5    2   2   1</span></span>
+<span><span class="co">#&gt; 6    1   0   1</span></span>
+<span><span class="co">#&gt; 7    2   0   1</span></span>
+<span><span class="co">#&gt; 8    1   1   1</span></span>
+<span><span class="co">#&gt; 9    2   0   1</span></span>
+<span><span class="co">#&gt; 10   2   1   0</span></span></code></pre></div>
 <p>The defined trait (Trait 1) can be inspected via the genetic values
 calculated for each individual.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">basePop</span><span class="op">@</span><span class="va">gv</span></span>
 <span><span class="co">#&gt;           Trait1</span></span>
-<span><span class="co">#&gt;  [1,]  1.8421733</span></span>
-<span><span class="co">#&gt;  [2,] -0.6135396</span></span>
-<span><span class="co">#&gt;  [3,] -0.2868825</span></span>
-<span><span class="co">#&gt;  [4,] -1.1250712</span></span>
-<span><span class="co">#&gt;  [5,] -0.1561005</span></span>
-<span><span class="co">#&gt;  [6,] -0.5314959</span></span>
-<span><span class="co">#&gt;  [7,] -0.9722748</span></span>
-<span><span class="co">#&gt;  [8,] -0.2603933</span></span>
-<span><span class="co">#&gt;  [9,]  0.2304007</span></span>
-<span><span class="co">#&gt; [10,]  1.8731837</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1,] -0.4813977</span></span>
+<span><span class="co">#&gt;  [2,]  0.3865077</span></span>
+<span><span class="co">#&gt;  [3,] -0.4778712</span></span>
+<span><span class="co">#&gt;  [4,]  0.5056042</span></span>
+<span><span class="co">#&gt;  [5,]  2.1997239</span></span>
+<span><span class="co">#&gt;  [6,]  0.1054426</span></span>
+<span><span class="co">#&gt;  [7,] -1.6360160</span></span>
+<span><span class="co">#&gt;  [8,]  0.7946407</span></span>
+<span><span class="co">#&gt;  [9,] -0.6693977</span></span>
+<span><span class="co">#&gt; [10,] -0.7272365</span></span></code></pre></div>
 <p>The genetic map for the QTLs can be retrieved via
 <code>getQtlMap</code>. Here the site of each QTL is identified per
 chromosome. The pos notes the position of the QTL on each chromosome in
 Morgans.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/getQtlMap.html">getQtlMap</a></span><span class="op">(</span>trait <span class="op">=</span> <span class="fl">1</span>, simParam <span class="op">=</span> <span class="va">SP</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      id chr site       pos</span></span>
-<span><span class="co">#&gt; 1_1 1_1   1    1 0.0000000</span></span>
-<span><span class="co">#&gt; 1_3 1_3   1    3 0.4719428</span></span>
-<span><span class="co">#&gt; 1_4 1_4   1    4 0.5127065</span></span>
-<span><span class="co">#&gt; 2_1 2_1   2    1 0.0000000</span></span>
-<span><span class="co">#&gt; 2_3 2_3   2    3 0.1626854</span></span>
-<span><span class="co">#&gt; 2_4 2_4   2    4 0.4081843</span></span>
-<span><span class="co">#&gt; 3_1 3_1   3    1 0.0000000</span></span>
-<span><span class="co">#&gt; 3_2 3_2   3    2 0.1965774</span></span>
-<span><span class="co">#&gt; 3_3 3_3   3    3 0.3314247</span></span></code></pre></div>
+<span><span class="co">#&gt;      id chr site        pos</span></span>
+<span><span class="co">#&gt; 1_1 1_1   1    1 0.00000000</span></span>
+<span><span class="co">#&gt; 1_2 1_2   1    2 0.06767086</span></span>
+<span><span class="co">#&gt; 1_4 1_4   1    4 0.65705010</span></span>
+<span><span class="co">#&gt; 2_1 2_1   2    1 0.00000000</span></span>
+<span><span class="co">#&gt; 2_2 2_2   2    2 0.15489400</span></span>
+<span><span class="co">#&gt; 2_4 2_4   2    4 0.54677955</span></span>
+<span><span class="co">#&gt; 3_1 3_1   3    1 0.00000000</span></span>
+<span><span class="co">#&gt; 3_2 3_2   3    2 0.12327668</span></span>
+<span><span class="co">#&gt; 3_3 3_3   3    3 0.17331433</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="what-is-a-genetic-map">What is a genetic map?<a class="anchor" aria-label="anchor" href="#what-is-a-genetic-map"></a>
 </h3>
@@ -481,22 +481,22 @@ QTL(s).</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/getGenMap.html">getGenMap</a></span><span class="op">(</span><span class="va">SP</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     id chr        pos</span></span>
 <span><span class="co">#&gt; 1  1_1   1 0.00000000</span></span>
-<span><span class="co">#&gt; 2  1_2   1 0.37757841</span></span>
-<span><span class="co">#&gt; 3  1_3   1 0.47194278</span></span>
-<span><span class="co">#&gt; 4  1_4   1 0.51270650</span></span>
+<span><span class="co">#&gt; 2  1_2   1 0.06767086</span></span>
+<span><span class="co">#&gt; 3  1_3   1 0.63986352</span></span>
+<span><span class="co">#&gt; 4  1_4   1 0.65705010</span></span>
 <span><span class="co">#&gt; 5  2_1   2 0.00000000</span></span>
-<span><span class="co">#&gt; 6  2_2   2 0.01909115</span></span>
-<span><span class="co">#&gt; 7  2_3   2 0.16268544</span></span>
-<span><span class="co">#&gt; 8  2_4   2 0.40818429</span></span>
+<span><span class="co">#&gt; 6  2_2   2 0.15489400</span></span>
+<span><span class="co">#&gt; 7  2_3   2 0.48044259</span></span>
+<span><span class="co">#&gt; 8  2_4   2 0.54677955</span></span>
 <span><span class="co">#&gt; 9  3_1   3 0.00000000</span></span>
-<span><span class="co">#&gt; 10 3_2   3 0.19657736</span></span>
-<span><span class="co">#&gt; 11 3_3   3 0.33142468</span></span>
-<span><span class="co">#&gt; 12 3_4   3 0.60763015</span></span>
+<span><span class="co">#&gt; 10 3_2   3 0.12327668</span></span>
+<span><span class="co">#&gt; 11 3_3   3 0.17331433</span></span>
+<span><span class="co">#&gt; 12 3_4   3 0.19337296</span></span>
 <span><span class="fu"><a href="../reference/getSnpMap.html">getSnpMap</a></span><span class="op">(</span>snpChip <span class="op">=</span> <span class="fl">1</span>, simParam <span class="op">=</span> <span class="va">SP</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      id chr site        pos</span></span>
-<span><span class="co">#&gt; 1_2 1_2   1    2 0.37757841</span></span>
-<span><span class="co">#&gt; 2_2 2_2   2    2 0.01909115</span></span>
-<span><span class="co">#&gt; 3_4 3_4   3    4 0.60763015</span></span></code></pre></div>
+<span><span class="co">#&gt;      id chr site       pos</span></span>
+<span><span class="co">#&gt; 1_3 1_3   1    3 0.6398635</span></span>
+<span><span class="co">#&gt; 2_3 2_3   2    3 0.4804426</span></span>
+<span><span class="co">#&gt; 3_4 3_4   3    4 0.1933730</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -530,7 +530,7 @@ Modelling with AlphaSimR. Available at: <a href="https://learning.edx.org/course
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
