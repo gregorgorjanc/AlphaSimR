@@ -377,3 +377,7 @@ MaCS <- function(args, maxSites, inbred, ploidy, nThreads, seed) {
     .Call(`_AlphaSimR_MaCS`, args, maxSites, inbred, ploidy, nThreads, seed)
 }
 
+ts_num_individuals2 <- function(ts) {
+    .Call(`_AlphaSimR_ts_num_individuals2`, ts)
+}
+
