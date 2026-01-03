@@ -10,6 +10,7 @@
 #' @importFrom utils combn read.table write.table packageDescription
 #' @importFrom R6 R6Class
 #' @importFrom Rdpack reprompt
+#' @importFrom tskitr ts_load ts_num_individuals
 
 #' @description
 #' The successor to the 'AlphaSim' software for breeding program
