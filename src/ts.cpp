@@ -2,9 +2,12 @@
 // [[Rcpp::depends(tskitr)]]
 // [[Rcpp::plugins(tskitr)]]
 
-// This is just an example - we will replace it later with more appropriate
-// functions working with tree sequences.
-
+// TODO: This is just an example - we will replace it later with more appropriate
+//       functions working with tree sequences. For example to obtain haplotypes
+//       using https://tskit.dev/tskit/docs/stable/c-api.html#decoding-genotypes
+//
+//       See also ts: Create haplotypes from a tree sequence for downstream AlphaSimR work (but subsample sites!) #4
+//       https://github.com/HighlanderLab/AlphaSimR/issues/4
 //' @title Get number of individuals in tree sequence
 //' @description Get number of individuals in tree sequence
 //' @param ts an external pointer to a \code{tsk_treeseq_t} object.
