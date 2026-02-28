@@ -377,17 +377,19 @@ MaCS <- function(args, maxSites, inbred, ploidy, nThreads, seed) {
     .Call(`_AlphaSimR_MaCS`, args, maxSites, inbred, ploidy, nThreads, seed)
 }
 
-#' @title Get number of individuals in tree sequence
-#' @description Get number of individuals in tree sequence
-#' @param ts an external pointer to a \code{tsk_treeseq_t} object.
-#' @return integer number of individuals
+#' @title Summarise `tskit` table collection
+#' @param tc an external pointer to a \code{tsk_table_collection_t} object.
+#' @return A list.
 #' @examples
-#' ts_file <- system.file("examples", "test.trees", package = "tskitr")
-#' ts <- tskitr::ts_load(ts_file) # slendr also has ts_load()!
-#' tskitr::ts_num_individuals(ts)
-#' AlphaSimR::ts_num_individuals2(ts)
+#' ts_file <- system.file("examples", "test.trees", package = "RcppTskit")
+#' tc <- RcppTskit:::tc_ptr_load(ts_file)
+#' RcppTskit:::tc_ptr_summary(tc)
+#' AlphaSimR:::tc_ptr_summary2(tc) # a bit simpler at this stage ...
+#' tc <- RcppTskit::TableCollection$new(ts_file)
+#' RcppTskit:::tc_ptr_summary(tc$pointer)
+#' AlphaSimR:::tc_ptr_summary2(tc$pointer) # a bit simpler at this stage ...
 #' @export
-ts_num_individuals2 <- function(ts) {
-    .Call(`_AlphaSimR_ts_num_individuals2`, ts)
+tc_ptr_summary2 <- function(tc) {
+    .Call(`_AlphaSimR_tc_ptr_summary2`, tc)
 }
 
