@@ -3,14 +3,14 @@
 // [[Rcpp::depends(RcppTskit)]]
 // [[Rcpp::plugins(RcppTskit)]]
 
-// TODO: This is just an example - we will replace it later with more
-// appropriate
+// TODO: This is just an example - we will replace it later with other
 //       functions working with tree sequences. For example to obtain haplotypes
 //       using https://tskit.dev/tskit/docs/stable/c-api.html#decoding-genotypes
 //
 //       See also ts: Create haplotypes from a tree sequence for downstream
 //       AlphaSimR work (but subsample sites!) #4
 //       https://github.com/HighlanderLab/AlphaSimR/issues/4
+//
 //' @title Summarise `tskit` table collection
 //' @param tc an external pointer to a \code{tsk_table_collection_t} object.
 //' @return A list.
