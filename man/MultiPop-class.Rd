@@ -40,6 +40,7 @@ and can hence have a nested structure - see examples in \code{\link{newMultiPop}
 \section{Methods (by generic)}{
 \itemize{
 \item \code{show(MultiPop)}: Show MultiPop object summary
+\item \code{x[i}: Extract MultiPop by index
 
 \item \code{[}: Subset MultiPop by index
 
