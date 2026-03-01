@@ -382,14 +382,14 @@ MaCS <- function(args, maxSites, inbred, ploidy, nThreads, seed) {
 #' @return A list.
 #' @examples
 #' ts_file <- system.file("examples", "test.trees", package = "RcppTskit")
-#' tc <- RcppTskit:::tc_ptr_load(ts_file)
-#' RcppTskit:::tc_ptr_summary(tc)
-#' AlphaSimR:::tc_ptr_summary2(tc) # a bit simpler at this stage ...
+#' tc <- RcppTskit:::tc_xptr_load(ts_file)
+#' RcppTskit:::tc_xptr_summary(tc)
+#' AlphaSimR:::tc_xptr_summary2(tc) # a bit simpler at this stage ...
 #' tc <- RcppTskit::TableCollection$new(ts_file)
-#' RcppTskit:::tc_ptr_summary(tc$pointer)
-#' AlphaSimR:::tc_ptr_summary2(tc$pointer) # a bit simpler at this stage ...
+#' RcppTskit:::tc_xptr_summary(tc$pointer)
+#' AlphaSimR:::tc_xptr_summary2(tc$pointer) # a bit simpler at this stage ...
 #' @export
-tc_ptr_summary2 <- function(tc) {
-    .Call(`_AlphaSimR_tc_ptr_summary2`, tc)
+tc_xptr_summary2 <- function(tc) {
+    .Call(`_AlphaSimR_tc_xptr_summary2`, tc)
 }
 
