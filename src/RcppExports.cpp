@@ -875,14 +875,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// tc_xptr_summary2
-Rcpp::List tc_xptr_summary2(const SEXP tc);
-RcppExport SEXP _AlphaSimR_tc_xptr_summary2(SEXP tcSEXP) {
+// rtsk_table_collection_summary2
+Rcpp::List rtsk_table_collection_summary2(const SEXP tc);
+RcppExport SEXP _AlphaSimR_rtsk_table_collection_summary2(SEXP tcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const SEXP >::type tc(tcSEXP);
-    rcpp_result_gen = Rcpp::wrap(tc_xptr_summary2(tc));
+    rcpp_result_gen = Rcpp::wrap(rtsk_table_collection_summary2(tc));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rtsk_treeseq_get_num_individuals2
+int rtsk_treeseq_get_num_individuals2(const SEXP ts);
+RcppExport SEXP _AlphaSimR_rtsk_treeseq_get_num_individuals2(SEXP tsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const SEXP >::type ts(tsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rtsk_treeseq_get_num_individuals2(ts));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -944,7 +955,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_AlphaSimR_rngDiagnosticsSampleInt", (DL_FUNC) &_AlphaSimR_rngDiagnosticsSampleInt, 4},
     {"_AlphaSimR_rngDiagnosticsSamplePoisson", (DL_FUNC) &_AlphaSimR_rngDiagnosticsSamplePoisson, 3},
     {"_AlphaSimR_MaCS", (DL_FUNC) &_AlphaSimR_MaCS, 6},
-    {"_AlphaSimR_tc_xptr_summary2", (DL_FUNC) &_AlphaSimR_tc_xptr_summary2, 1},
+    {"_AlphaSimR_rtsk_table_collection_summary2", (DL_FUNC) &_AlphaSimR_rtsk_table_collection_summary2, 1},
+    {"_AlphaSimR_rtsk_treeseq_get_num_individuals2", (DL_FUNC) &_AlphaSimR_rtsk_treeseq_get_num_individuals2, 1},
     {NULL, NULL, 0}
 };
 

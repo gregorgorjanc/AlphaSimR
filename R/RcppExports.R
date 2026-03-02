@@ -382,14 +382,25 @@ MaCS <- function(args, maxSites, inbred, ploidy, nThreads, seed) {
 #' @return A list.
 #' @examples
 #' ts_file <- system.file("examples", "test.trees", package = "RcppTskit")
-#' tc <- RcppTskit:::tc_xptr_load(ts_file)
-#' RcppTskit:::tc_xptr_summary(tc)
-#' AlphaSimR:::tc_xptr_summary2(tc) # a bit simpler at this stage ...
-#' tc <- RcppTskit::TableCollection$new(ts_file)
-#' RcppTskit:::tc_xptr_summary(tc$pointer)
-#' AlphaSimR:::tc_xptr_summary2(tc$pointer) # a bit simpler at this stage ...
+#' tc <- RcppTskit:::tc_load(ts_file)
+#' RcppTskit:::rtsk_table_collection_summary(tc$xptr)
+#' rtsk_table_collection_summary2(tc$xptr)
 #' @export
-tc_xptr_summary2 <- function(tc) {
-    .Call(`_AlphaSimR_tc_xptr_summary2`, tc)
+rtsk_table_collection_summary2 <- function(tc) {
+    .Call(`_AlphaSimR_rtsk_table_collection_summary2`, tc)
+}
+
+#' @title Get number of individuals in tree sequence
+#' @param ts an external pointer to a \code{tsk_treeseq_t} object.
+#' @return integer number of individuals.
+#' @examples
+#' ts_file <- system.file("examples", "test.trees", package = "RcppTskit")
+#' ts <- RcppTskit::ts_load(ts_file)
+#' ts$num_individuals()
+#' RcppTskit:::rtsk_treeseq_get_num_individuals(ts$xptr)
+#' rtsk_treeseq_get_num_individuals2(ts$xptr)
+#' @export
+rtsk_treeseq_get_num_individuals2 <- function(ts) {
+    .Call(`_AlphaSimR_rtsk_treeseq_get_num_individuals2`, ts)
 }
 
