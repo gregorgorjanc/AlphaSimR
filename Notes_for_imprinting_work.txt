@@ -43,7 +43,8 @@ Current intent of this branch
 - Branch:
   `imprinting`
 - This branch is now intended to be a clean placeholder / coordination branch for the future restart.
-- No local scratch implementation should live here unless it is part of the new restart with David.
+- The file `__TODO_AlphaSimR_ImprintingVarianceComponents.R` is intentionally kept here as a math / derivation scratchpad reference.
+- Apart from that retained reference file, no local scratch implementation should live here unless it is part of the new restart with David.
 
 What to do when work resumes
 ----------------------------
