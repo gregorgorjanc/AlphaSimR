@@ -1,0 +1,129 @@
+Imprinting Work Restart Notes
+=============================
+
+Date: 2026-04-18
+
+Current setup
+-------------
+
+- Clean restart worktree:
+  `/Users/ggorjanc/Storages/GitBox/AlphaSimR/AlphaSimR-wt-imprinting`
+- Branch in that worktree:
+  `imprinting`
+- Base commit:
+  current `upstream/devel` at the time the worktree was created
+
+What was reviewed
+-----------------
+
+- David's old branch:
+  `https://github.com/david20011999/AlphaSimR/commits/imprinting/`
+- David -> Gregor PR:
+  `https://github.com/gregorgorjanc/AlphaSimR/pull/4`
+- Gregor fork branch:
+  `https://github.com/gregorgorjanc/AlphaSimR/tree/imprinting`
+- Upstream branch:
+  `https://github.com/gaynorr/AlphaSimR/tree/imprinting`
+- Upstream discussion and design record:
+  `https://github.com/gaynorr/AlphaSimR/pull/167`
+
+Main conclusions
+----------------
+
+- The old `imprinting` branches are not a clean place to continue work.
+- `upstream/imprinting` is far behind current `upstream/devel` and should be treated as historical reference, not as the active implementation branch.
+- `origin/imprinting` is effectively the same old line of work and also should be treated as reference only.
+- David's PR to Gregor contains later experiments such as `TraitADI`, `calcGenParamS()`, and `getGvS()`, but it still sits on the stale branch history.
+- The real unresolved technical problem is not the basic API surface for imprinting. It is the variance-component definition and orthogonal decomposition of additive, dominance, and imprinting effects.
+- The upstream discussion in PR #167 is the key design record. The important guidance there was:
+  - move toward regression-based orthogonalization of `bv`, `dd`, and imprinting deviation
+  - do not lock in male/female breeding-value semantics too early
+  - keep F1 / cross-mean prediction outside AlphaSimR for now
+  - keep the first renewed implementation narrow and avoid dragging in polyploids or epistasis immediately
+
+Recommended restart strategy
+----------------------------
+
+- Use the new `imprinting` worktree as the active restart.
+- Treat old code only as a quarry for selective porting.
+- Use `/Users/ggorjanc/Downloads/__TODO_AlphaSimR_ImprintingVarianceComponents.R`
+  as the mathematical scratchpad / oracle for the regression decomposition.
+- First implementation pass should focus on:
+  - tests for orthogonal regressors under arbitrary genotype frequencies
+  - `TraitAI`
+  - updated `calcGenParam()` logic for orthogonal decomposition
+  - matching `getGv()` behavior
+  - only then extend to `TraitADI`
+- Leave out, for now:
+  - polyploids
+  - epistasis-related imprinting combinations
+  - polished vignette work
+  - a final public interpretation of sex-specific breeding values
+
+Useful branch facts
+-------------------
+
+- Local working branch now is `imprinting`.
+- Remote branch status checked on 2026-04-18:
+  - `highlanderlab/imprinting`: does not currently exist
+  - `origin/imprinting`: already exists and points to the old imprinting history
+
+Commands to push this branch
+----------------------------
+
+Work from the imprinting worktree:
+
+```bash
+cd /Users/ggorjanc/Storages/GitBox/AlphaSimR/AlphaSimR-wt-imprinting
+git status --short --branch
+git log --oneline --max-count=5
+```
+
+Push to HighlanderLab for the first time:
+
+```bash
+git push highlanderlab imprinting:imprinting
+```
+
+Push to Gregor's fork under the same branch name:
+
+```bash
+git push origin imprinting:imprinting
+```
+
+Important note about Gregor's fork
+----------------------------------
+
+- `origin/imprinting` already exists on the old history.
+- Because this new local `imprinting` branch is a clean restart from `upstream/devel`, the plain push above will most likely be rejected as non-fast-forward.
+- If the intention is to replace the old `origin/imprinting` branch with this new restart branch, use:
+
+```bash
+git push --force-with-lease origin imprinting:imprinting
+```
+
+Safer alternative for Gregor's fork
+-----------------------------------
+
+If you want to keep the old `origin/imprinting` branch around for archaeology, push this restart under a new branch name instead:
+
+```bash
+git push origin imprinting:imprinting-restart
+```
+
+Suggested practical sequence
+----------------------------
+
+If the goal is to share the restart without losing the old branch immediately:
+
+```bash
+cd /Users/ggorjanc/Storages/GitBox/AlphaSimR/AlphaSimR-wt-imprinting
+git push highlanderlab imprinting:imprinting
+git push origin imprinting:imprinting-restart
+```
+
+If later you decide that `origin/imprinting` should be replaced:
+
+```bash
+git push --force-with-lease origin imprinting:imprinting
+```
