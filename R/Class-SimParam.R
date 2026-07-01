@@ -637,6 +637,202 @@ SimParam = R6Class(
       }
       invisible(self)
     },
+    
+    #' @description
+    #' Randomly assigns eligible QTLs for one or more traits with imprinting (silencing)
+    #' If simulating more than one trait, all traits will be pleiotropic
+    #' with correlated effects.
+    #'
+    #' @param nQtlPerChr number of QTLs per chromosome. Can be a single value or nChr values.
+    #' @param mean a vector of desired mean genetic values for one or more traits
+    #' @param var a vector of desired genetic variances for one or more traits
+    #' @param meanID mean imprinting degree
+    #' @param varID variance of imprinting degree
+    #' @param corA a matrix of correlations between additive effects
+    #' @param corID a matrix of correlations between imprinting degrees
+    #' @param useVarA tune according to additive genetic variance if true. If
+    #' FALSE, tuning is performed according to total genetic variance.
+    #' @param gamma should a gamma distribution be used instead of normal
+    #' @param shape the shape parameter for the gamma distribution
+    #'   (the rate/scale parameter of the gamma distribution is accounted
+    #'   for via the desired level of genetic variance, the var argument)
+    #' @param force should the check for a running simulation be
+    #' ignored. Only set to TRUE if you know what you are doing.
+    #' @param name optional name for trait(s)
+    #'
+    #' @examples
+    #' #Create founder haplotypes
+    #' founderPop = quickHaplo(nInd=10, nChr=1, segSites=1)
+    #'
+    #' #Set simulation parameters
+    #' SP = SimParam$new(founderPop)
+    #' \dontshow{SP$nThreads = 1L}
+    #' SP$addTraitAI(1, meanID=0.5)
+    addTraitAI = function(nQtlPerChr,mean=0,var=1,meanID=0,
+                          varID=0,corA=NULL,corID=NULL,useVarA=TRUE,
+                          gamma=FALSE,shape=1,force=FALSE,name=NULL){
+      if(self$founderPop@ploidy > 2){
+        stop("ERROR: Imprinting is not yet implemented for polyploids!")
+      }
+      if(!force){
+        private$.isRunning()
+      }
+      if(length(nQtlPerChr)==1){
+        nQtlPerChr = rep(nQtlPerChr,self$nChr)
+      }
+      nTraits = length(mean)
+      if(length(meanID)==1) meanID = rep(meanID,nTraits)
+      if(length(varID)==1) varID = rep(varID,nTraits)
+      if(length(gamma)==1) gamma = rep(gamma,nTraits)
+      if(length(shape)==1) shape = rep(shape,nTraits)
+      if(is.null(corA)) corA=diag(nTraits)
+      if(is.null(corID)) corID=diag(nTraits)
+      if(is.null(name)){
+        name = paste0("Trait",1:nTraits+self$nTraits)
+      }
+      stopifnot(length(mean)==length(var),
+                length(meanID)==length(mean),
+                isSymmetric(corA),
+                isSymmetric(corID),
+                nrow(corA)==nTraits,
+                nrow(corID)==nTraits,
+                length(varID)==nTraits,
+                length(name)==nTraits)
+      qtlLoci = private$.pickLoci(nQtlPerChr)
+      addEff = sampAddEff(qtlLoci=qtlLoci,nTraits=nTraits,
+                          corr=corA,gamma=gamma,shape=shape)
+      impEff = sampImpEff(qtlLoci=qtlLoci,nTraits=nTraits,addEff=addEff,
+                          corID=corID,meanID=meanID,varID=varID)
+      for(i in 1:nTraits){
+        trait = new("TraitAI",
+                    qtlLoci,
+                    addEff=addEff[,i],
+                    impEff=impEff[,i],
+                    intercept=0,
+                    name=name[i])
+        tmp = calcGenParam(trait, self$founderPop,
+                           self$nThreads)
+        if(useVarA){
+          scale = sqrt(var[i])/sqrt(popVar(tmp$bv)[1])
+        }else{
+          scale = sqrt(var[i])/sqrt(popVar(tmp$gv)[1])
+        }
+        trait@addEff = trait@addEff*scale
+        trait@impEff = trait@impEff*scale
+        trait@intercept = mean[i]-mean(tmp$gv*scale)
+        if(useVarA){
+          private$.addTrait(trait,var[i],popVar(tmp$gv*scale)[1])
+        }else{
+          private$.addTrait(trait,popVar(tmp$bv*scale)[1],var[i])
+        }
+      }
+      invisible(self)
+    },
+    
+    #' @description
+    #' Randomly assigns eligible QTLs for one or more traits with dominance and imprinting (silencing)
+    #' If simulating more than one trait, all traits will be pleiotropic
+    #' with correlated effects.
+    #'
+    #' @param nQtlPerChr number of QTLs per chromosome. Can be a single value or nChr values.
+    #' @param mean a vector of desired mean genetic values for one or more traits
+    #' @param var a vector of desired genetic variances for one or more traits
+    #' @param meanDD mean dominance degree
+    #' @param varDD variance of dominance degree
+    #' @param meanID mean imprinting degree
+    #' @param varID variance of imprinting degree
+    #' @param corA a matrix of correlations between additive effects
+    #' @param corDD a matrix of correlations between dominance degrees
+    #' @param corID a matrix of correlations between imprinting degrees
+    #' @param useVarA tune according to additive genetic variance if true. If
+    #' FALSE, tuning is performed according to total genetic variance.
+    #' @param gamma should a gamma distribution be used instead of normal
+    #' @param shape the shape parameter for the gamma distribution
+    #'   (the rate/scale parameter of the gamma distribution is accounted
+    #'   for via the desired level of genetic variance, the var argument)
+    #' @param force should the check for a running simulation be
+    #' ignored. Only set to TRUE if you know what you are doing.
+    #' @param name optional name for trait(s)
+    #'
+    #' @examples
+    #' #Create founder haplotypes
+    #' founderPop = quickHaplo(nInd=10, nChr=1, segSites=1)
+    #'
+    #' #Set simulation parameters
+    #' SP = SimParam$new(founderPop)
+    #' \dontshow{SP$nThreads = 1L}
+    #' SP$addTraitADI(1, meanDD=0.5, meanID=0.5)
+    addTraitADI = function(nQtlPerChr,mean=0,var=1,meanDD=0,varDD=0,meanID=0,
+                           varID=0,corA=NULL,corDD=NULL,corID=NULL,useVarA=TRUE,
+                           gamma=FALSE,shape=1,force=FALSE,name=NULL){
+      if(self$founderPop@ploidy > 2){
+        stop("ERROR: Imprinting is not yet implemented for polyploids!")
+      }
+      if(!force){
+        private$.isRunning()
+      }
+      if(length(nQtlPerChr)==1){
+        nQtlPerChr = rep(nQtlPerChr,self$nChr)
+      }
+      nTraits = length(mean)
+      if(length(meanDD)==1) meanDD = rep(meanDD,nTraits)
+      if(length(meanID)==1) meanID = rep(meanID,nTraits)
+      if(length(varDD)==1) varDD = rep(varDD,nTraits)
+      if(length(varID)==1) varID = rep(varID,nTraits)
+      if(length(gamma)==1) gamma = rep(gamma,nTraits)
+      if(length(shape)==1) shape = rep(shape,nTraits)
+      if(is.null(corA)) corA=diag(nTraits)
+      if(is.null(corDD)) corDD=diag(nTraits)
+      if(is.null(corID)) corID=diag(nTraits)
+      if(is.null(name)){
+        name = paste0("Trait",1:nTraits+self$nTraits)
+      }
+      stopifnot(length(mean)==length(var),
+                length(meanDD)==length(mean),
+                length(meanID)==length(mean),
+                isSymmetric(corA),
+                isSymmetric(corDD),
+                isSymmetric(corID),
+                nrow(corA)==nTraits,
+                nrow(corDD)==nTraits,
+                nrow(corID)==nTraits,
+                length(varDD)==nTraits,
+                length(varID)==nTraits,
+                length(name)==nTraits)
+      qtlLoci = private$.pickLoci(nQtlPerChr)
+      addEff = sampAddEff(qtlLoci=qtlLoci,nTraits=nTraits,
+                          corr=corA,gamma=gamma,shape=shape)
+      domEff = sampDomEff(qtlLoci=qtlLoci,nTraits=nTraits,addEff=addEff,
+                          corDD=corDD,meanDD=meanDD,varDD=varDD)
+      impEff = sampImpEff(qtlLoci=qtlLoci,nTraits=nTraits,addEff=addEff,
+                          corID=corID,meanID=meanID,varID=varID)
+      for(i in 1:nTraits){
+        trait = new("TraitADI",
+                    qtlLoci,
+                    addEff=addEff[,i],
+                    domEff=domEff[,i],
+                    impEff=impEff[,i],
+                    intercept=0,
+                    name=name[i])
+        tmp = calcGenParam(trait, self$founderPop,
+                           self$nThreads)
+        if(useVarA){
+          scale = sqrt(var[i])/sqrt(popVar(tmp$bv)[1])
+        }else{
+          scale = sqrt(var[i])/sqrt(popVar(tmp$gv)[1])
+        }
+        trait@addEff = trait@addEff*scale
+        trait@domEff = trait@domEff*scale
+        trait@impEff = trait@impEff*scale
+        trait@intercept = mean[i]-mean(tmp$gv*scale)
+        if(useVarA){
+          private$.addTrait(trait,var[i],popVar(tmp$gv*scale)[1])
+        }else{
+          private$.addTrait(trait,popVar(tmp$bv*scale)[1],var[i])
+        }
+      }
+      invisible(self)
+    },
 
     #' @description
     #' An alternative method for adding a trait with additive  and dominance effects
@@ -1458,13 +1654,14 @@ SimParam = R6Class(
     #' formatting the trait as a \code{\link{LociMap-class}}.
     #' The formatting is performed automatically for the user,
     #' with more user friendly data.frames or matrices taken as
-    #' inputs. This function only works for A and AD trait types.
+    #' inputs. This function only works for A, AD, AI and ADI trait types.
     #'
     #' @param markerNames a vector of names for the QTL
     #' @param addEff a matrix of additive effects (nLoci x nTraits).
     #' Alternatively, a vector of length nLoci can be supplied for
     #' a single trait.
     #' @param domEff optional dominance effects for each locus
+    #' @param impEff optional imprinting effects for each locus
     #' @param intercept optional intercepts for each trait
     #' @param name optional name(s) for the trait(s)
     #' @param varE default error variance for phenotype, optional
@@ -1473,6 +1670,7 @@ SimParam = R6Class(
     importTrait = function(markerNames,
                            addEff,
                            domEff=NULL,
+                           impEff=NULL,
                            intercept=NULL,
                            name=NULL,
                            varE=NULL,
@@ -1492,6 +1690,16 @@ SimParam = R6Class(
         domEff = as.matrix(domEff)
         stopifnot(nrow(addEff)==nrow(domEff),
                   ncol(addEff)==ncol(domEff))
+      }
+      if(is.null(impEff)){
+        useImp = FALSE
+      }else{
+        useImp = TRUE
+        impEff = as.matrix(impEff)
+        stopifnot(nrow(addEff)==nrow(impEff),
+                  ncol(addEff)==ncol(impEff),
+                  nrow(domEff)==nrow(impEff),
+                  ncol(domEff)==ncol(impEff))
       }
 
       # Prepare the intercept
@@ -1524,16 +1732,16 @@ SimParam = R6Class(
       # Create trait variables
       lociPerChr = integer(self$nChr)
       lociLoc = vector("list", self$nChr)
-      addEffList = domEffList = vector("list", nTraits)
+      addEffList = domEffList = impEffList = vector("list", nTraits)
       for(i in seq_len(nTraits)){
-        addEffList[[i]] = domEffList[[i]] = vector("list", self$nChr)
+        addEffList[[i]] = domEffList[[i]] = impEffList[[i]] = vector("list", self$nChr)
       }
 
       # Loop through chromosomes
       for(i in seq_len(self$nChr)){
         # Working on trait 1
         # Initialize variables
-        addEffList[[1]][[i]] = domEffList[[1]][[i]] = numeric()
+        addEffList[[1]][[i]] = domEffList[[1]][[i]] = impEffList[[1]][[i]] = numeric()
         lociLoc[[i]] = integer()
 
         # Find matches if they exist
@@ -1546,16 +1754,22 @@ SimParam = R6Class(
           if(useDom){
             domEffList[[1]][[i]] = domEff[na.omit(take),1]
           }
+          if(useImp){
+            impEffList[[1]][[i]] = impEff[na.omit(take),1]
+          }
         }
 
         # Work on additional traits?
         if(nTraits>1){
           for(j in 2:nTraits){
-            addEffList[[j]][[i]] = domEffList[[j]][[i]] = numeric()
+            addEffList[[j]][[i]] = domEffList[[j]][[i]] = impEffList[[j]][[i]] = numeric()
             if(lociPerChr[i]>0L){
               addEffList[[j]][[i]] = addEff[na.omit(take),j]
               if(useDom){
                 domEffList[[j]][[i]] = domEff[na.omit(take),j]
+              }
+              if(useImp){
+                impEffList[[j]][[i]] = impEff[na.omit(take),j]
               }
             }
           }
@@ -1570,6 +1784,18 @@ SimParam = R6Class(
         addEff = unlist(addEffList[[i]])
         if(useDom){
           domEff = unlist(domEffList[[i]])
+          if(useImp){
+            impEff = unlist(impEffList[[i]])
+            trait = new("TraitADI",
+                        addEff=addEff,
+                        domEff=domEff,
+                        impEff=impEff,
+                        intercept=intercept[i],
+                        nLoci=nLoci,
+                        lociPerChr=lociPerChr,
+                        lociLoc=lociLoc,
+                        name=name[i])
+          }else{
           trait = new("TraitAD",
                       addEff=addEff,
                       domEff=domEff,
@@ -1578,7 +1804,19 @@ SimParam = R6Class(
                       lociPerChr=lociPerChr,
                       lociLoc=lociLoc,
                       name=name[i])
+          }
         }else{
+          if(useImp){
+            impEff = unlist(impEffList[[i]])
+            trait = new("TraitAI",
+                        addEff=addEff,
+                        impEff=impEff,
+                        intercept=intercept[i],
+                        nLoci=nLoci,
+                        lociPerChr=lociPerChr,
+                        lociLoc=lociLoc,
+                        name=name[i])
+          }else{
           trait = new("TraitA",
                       addEff=addEff,
                       intercept=intercept[i],
@@ -1586,6 +1824,7 @@ SimParam = R6Class(
                       lociPerChr=lociPerChr,
                       lociLoc=lociLoc,
                       name=name[i])
+          }
         }
 
         # Add trait to simParam
@@ -2715,6 +2954,32 @@ sampDomEff = function(qtlLoci,nTraits,addEff,corDD,
   domEff = sweep(domEff,2,meanDD,"+")
   domEff = abs(addEff)*domEff
   return(domEff)
+}
+
+#' @title Sample imprinting effects
+#'
+#' @description Samples imprinting deviation effects from a normal distribution
+#' and uses previously sampled additive effects to form imprinting
+#' effects
+#'
+#' @param qtlLoci total number of loci
+#' @param nTraits number of traits
+#' @param addEff previously sampled additive effects
+#' @param corID correlation between imprinting degrees
+#' @param meanID mean value of imprinting degrees
+#' @param varID variance of imprinting degrees
+#'
+#' @returns a matrix with dimensions qtlLoci by nTraits
+#'
+#' @keywords internal
+sampImpEff = function(qtlLoci,nTraits,addEff,corID,
+                      meanID,varID){
+  impEff = matrix(rnorm(qtlLoci@nLoci*nTraits),
+                  ncol=nTraits)%*%transMat(corID)
+  impEff = sweep(impEff,2,sqrt(varID),"*")
+  impEff = sweep(impEff,2,meanID,"+")
+  impEff = abs(addEff)*impEff
+  return(impEff)
 }
 
 #' @title Sample epistatic effects
