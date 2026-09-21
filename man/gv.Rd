@@ -12,6 +12,9 @@ gv(pop)
 \description{
 A wrapper for accessing the gv slot
 }
+\details{
+See vignette TODO for background theory and its demonstration.
+}
 \examples{
 #Create founder haplotypes
 founderPop = quickHaplo(nInd=10, nChr=1, segSites=10)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/popSummary.R
 \name{varA}
 \alias{varA}
-\title{Additive variance}
+\title{Additive genetic variance}
 \usage{
 varA(pop, simParam = NULL, nThreads = NULL)
 }
@@ -17,7 +17,10 @@ global environment.}
 If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 }
 \description{
-Returns additive variance for all traits
+Returns additive genetic variance for all traits
+}
+\details{
+See vignette TODO for background theory and its demonstration.
 }
 \examples{
 #Create founder haplotypes
@@ -26,7 +29,6 @@ founderPop = quickHaplo(nInd=10, nChr=1, segSites=10)
 #Set simulation parameters
 SP = SimParam$new(founderPop)
 SP$addTraitAD(10, meanDD=0.5)
-SP$setVarE(h2=0.5)
 \dontshow{SP$nThreads = 1L}
 
 #Create population

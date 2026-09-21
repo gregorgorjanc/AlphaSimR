@@ -2,7 +2,7 @@
 % Please edit documentation in R/popSummary.R
 \name{varAA}
 \alias{varAA}
-\title{Additive-by-additive epistatic variance}
+\title{Additive-by-additive epistatic genetic variance}
 \usage{
 varAA(pop, simParam = NULL, nThreads = NULL)
 }
@@ -17,8 +17,11 @@ global environment.}
 If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 }
 \description{
-Returns additive-by-additive epistatic
+Returns additive-by-additive epistatic genetic
 variance for all traits
+}
+\details{
+See vignette TODO for background theory and its demonstration.
 }
 \examples{
 #Create founder haplotypes
@@ -26,8 +29,7 @@ founderPop = quickHaplo(nInd=10, nChr=1, segSites=10)
 
 #Set simulation parameters
 SP = SimParam$new(founderPop)
-SP$addTraitAD(10, meanDD=0.5)
-SP$setVarE(h2=0.5)
+SP$addTraitAD(10, meanDD=0.5, relAA=0.2)
 \dontshow{SP$nThreads = 1L}
 
 #Create population

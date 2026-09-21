@@ -2,7 +2,7 @@
 % Please edit documentation in R/popSummary.R
 \name{genParam}
 \alias{genParam}
-\title{Sumarize genetic parameters}
+\title{Calculate quantitative genetic quantities}
 \usage{
 genParam(pop, simParam = NULL, nThreads = NULL)
 }
@@ -18,42 +18,51 @@ If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 }
 \value{
 \describe{
+\item{varG}{an nTrait by nTrait matrix of total genetic variances}
 \item{varA}{an nTrait by nTrait matrix of additive genetic variances}
 \item{varD}{an nTrait by nTrait matrix of dominance genetic variances}
 \item{varAA}{an nTrait by nTrait matrix of additive-by-additive genetic variances}
-\item{varG}{an nTrait by nTrait matrix of total genetic variances}
+\item{varN}{an nTrait by nTrait matrix of non-additive genetic variances}
+\item{genicVarG}{an nTrait vector of total genic variances}
 \item{genicVarA}{an nTrait vector of additive genic variances}
 \item{genicVarD}{an nTrait vector of dominance genic variances}
 \item{genicVarAA}{an nTrait vector of additive-by-additive genic variances}
-\item{genicVarG}{an nTrait vector of total genic variances}
-\item{covA_HW}{an nTrait vector of additive covariances due to non-random mating}
-\item{covD_HW}{an nTrait vector of dominance covariances due to non-random mating}
-\item{covAA_HW}{an nTrait vector of additive-by-additive covariances due to non-random mating}
-\item{covG_HW}{an nTrait vector of total genic covariances due to non-random mating}
-\item{covA_L}{an nTrait vector of additive covariances due to linkage disequilibrium}
-\item{covD_L}{an nTrait vector of dominance covariances due to linkage disequilibrium}
-\item{covAA_L}{an nTrait vector of additive-by-additive covariances due to linkage disequilibrium}
-\item{covAD_L}{an nTrait vector of additive by dominance covariances due to linkage disequilibrium}
-\item{covAAA_L}{an nTrait vector of additive by additive-by-additive covariances due to linkage disequilibrium}
-\item{covDAA_L}{an nTrait vector of dominance by additive-by-additive covariances due to linkage disequilibrium}
-\item{covG_L}{an nTrait vector of total genic covariances due to linkage disequilibrium}
+\item{genicVarN}{an nTrait vector of non-additive genic variances}
+\item{covG_HW}{an nTrait vector of total genicTODO covariances due to non-random mating}
+\item{covA_HW}{an nTrait vector of additive TODO covariances due to non-random mating}
+\item{covD_HW}{an nTrait vector of dominance TODO covariances due to non-random mating}
+\item{covAA_HW}{an nTrait vector of additive-by-additive TODO covariances due to non-random mating}
+\item{covN_HW}{an nTrait vector of non-additive TODO covariances due to non-random mating}
+\item{covG_L}{an nTrait vector of total genic TODO covariances due to linkage disequilibrium}
+\item{covA_L}{an nTrait vector of additive TODOcovariances due to linkage disequilibrium}
+\item{covD_L}{an nTrait vector of dominance TODO covariances due to linkage disequilibrium}
+\item{covAA_L}{an nTrait vector of additive-by-additive TODO covariances due to linkage disequilibrium}
+\item{covAD_L}{an nTrait vector of additive by dominance TODO covariances due to linkage disequilibrium}
+\item{covAAA_L}{an nTrait vector of additive by additive-by-additive TODO covariances due to linkage disequilibrium}
+\item{covDAA_L}{an nTrait vector of dominance by additive-by-additive TODO covariances due to linkage disequilibrium}
+\item{covAN_L}{an nTrait vector of additive by non-additive TODO covariances due to linkage disequilibrium}
 \item{mu}{an nTrait vector of trait means}
 \item{mu_HW}{an nTrait vector of expected trait means under random mating}
 \item{gv}{a matrix of genetic values with dimensions nInd by nTraits}
 \item{bv}{a matrix of breeding values with dimensions nInd by nTraits}
 \item{dd}{a matrix of dominance deviations with dimensions nInd by nTraits}
 \item{aa}{a matrix of additive-by-additive epistatic deviations with dimensions nInd by nTraits}
-\item{gv_mu}{an nTrait vector of intercepts with dimensions nInd by nTraits}
-\item{gv_a}{a matrix of additive genetic values with dimensions nInd by nTraits}
-\item{gv_d}{a matrix of dominance genetic values with dimensions nInd by nTraits}
-\item{gv_aa}{a matrix of additive-by-additive genetic values with dimensions nInd by nTraits}
-\item{alpha}{a list of average allele subsitution effects with length nTraits}
-\item{alpha_HW}{a list of average allele subsitution effects at Hardy-Weinberg equilibrium with length nTraits}
+\item{nd}{a matrix of non-additive deviations with dimensions nInd by nTraits}
+\item{gv_mu}{an nTrait TODO vector of genetic value means with dimensions nInd by nTraits TODO}
+\item{gv_a}{a matrix of additive  genetic values with dimensions nInd by nTraits}
+\item{gv_d}{a matrix of dominance TODO genetic values with dimensions nInd by nTraits}
+\item{gv_aa}{a matrix of additive-by-additive TODO genetic values with dimensions nInd by nTraits}
+\item{gv_n}{a matrix of non-additive TODO genetic values with dimensions nInd by nTraits}
+\item{alpha}{a list of average allele substitution effects with length nTraits}
+\item{alpha_HW}{a list of average allele substitution effects at Hardy-Weinberg equilibrium with length nTraits}
 }
 }
 \description{
-Calculates genetic and genic additive and dominance variances
+Calculates quantitative genetic quantities and their variances
 for an object of \code{\link{Pop-class}}
+}
+\details{
+See vignette TODO for background theory and its demonstration.
 }
 \examples{
 #Create founder haplotypes
@@ -61,12 +70,11 @@ founderPop = quickHaplo(nInd=10, nChr=1, segSites=10)
 
 #Set simulation parameters
 SP = SimParam$new(founderPop)
-SP$addTraitAD(10, meanDD=0.5)
-SP$setVarE(h2=0.5)
+SP$addTraitAD(10, meanDD=0.5, relAA=0.2)
 \dontshow{SP$nThreads = 1L}
 
 #Create population
 pop = newPop(founderPop, simParam=SP)
-ans = genParam(pop, simParam=SP)
+genParam(pop, simParam=SP)
 
 }

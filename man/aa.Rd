@@ -20,14 +20,16 @@ If \code{NULL}, the number is obtained from \code{simParam$nThreads}.}
 Returns additive-by-additive epistatic
 deviations for all traits
 }
+\details{
+See vignette TODO for background theory and its demonstration.
+}
 \examples{
 #Create founder haplotypes
 founderPop = quickHaplo(nInd=10, nChr=1, segSites=10)
 
 #Set simulation parameters
 SP = SimParam$new(founderPop)
-SP$addTraitAD(10, meanDD=0.5)
-SP$setVarE(h2=0.5)
+SP$addTraitAD(10, meanDD=0.5, rel=0.2)
 \dontshow{SP$nThreads = 1L}
 
 #Create population
