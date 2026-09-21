@@ -168,7 +168,6 @@ test_that("genParam", {
   expect_equal(unname(gp$gv_mu[1]), 10, tolerance = 1e-6)
   expect_equal(unname(gp$gv_mu[2]), 10, tolerance = 1e-6)
   expect_equal(unname(gp$gv_mu[3]), 10, tolerance = 1e-6)
-  # TODO: consider renaming gv_mu to gv_midpoint or smth like this?
 
   # ---- Genetic value - part from additive effect (a) only ----
 
@@ -577,6 +576,7 @@ test_that("genParam", {
   # FAILS expect_equal(myVarA, # 6.2208
   #                    unname(gp$varA[3,3]), tolerance = 1e-6) # 13.05874
   # Due to deviation from HWE
+  # TODO: add a test of failure!
 
   # ---- Additive genetic variance (actual) ----
 
@@ -635,6 +635,7 @@ test_that("genParam", {
   # FAILS expect_equal(myVarD, # 0.9216
   #                    unname(gp$varD[3,3]), tolerance = 1e-6) # 0.4196571
   # Due to deviation from HWE
+  # TODO: add a test of failure!
 
   # ---- Dominance genetic variance (actual) ----
 
@@ -830,6 +831,7 @@ test_that("genParam", {
   ) # 13.05874
   # FAILS expect_equal(myVarA, # 13.05874
   #                    unname(gp$genicVarA[3]), tolerance = 1e-6) # 6.2208
+  # TODO: add a test of failure!
   expect_equal(theoVarAHW, unname(gp$genicVarA[3]), tolerance = 1e-6) # 6.2208
 
   # TODO: why is covA_HW called "additive covariances due to non-random mating"?
@@ -913,6 +915,7 @@ test_that("genParam", {
   ) # 0.9216
   # FAILS expect_equal(myVarD, # 0.4196571
   #                    unname(gp$genicVarD[3]), tolerance = 1e-6) # 0.9216
+  # TODO: add a test of failure!
 
   expect_equal(unname(gp$covD_HW[1]), 0, tolerance = 1e-6) # 0
   expect_equal(unname(gp$covD_HW[2]), 0, tolerance = 1e-6) # 0

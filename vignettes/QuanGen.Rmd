@@ -23,40 +23,46 @@ library(AlphaSimR)
 ```
 
 This article describes how AlphaSimR implements quantitative genetics theory.
-The companion article on traits describes a model using *genotypic parameterization*:
+The companion article on traits describes
+the quantitative genetics model with *genotypic parameterization*:
 how a genotype obtains a genetic value from
 additive and non-additive genotypic effects.
-Non-additive genotypic effects include dominance, epistasis, and imprinting.
-This article summarizes the model with *genotypic parameterization* and
-then describes a model using *breeding value parameterization*:
+This article summarizes the *genotypic parameterization* and
+then describes the *breeding value parameterization*:
 how the genetic values are decomposed into
 additive genetic (breeding) values and non-additive deviations.
 The article also describes the corresponding decomposition of
 genetic variance of a population into
 additive genetic and non-additive genetic variances.
 You should be familiar with the traits article before reading this one.
+The article covers non-additive genotypic effects due to dominance and epistasis,
+while imprinting is covered in another vignette. TODO
 
-The distinction between the two model parameterizations is a constant source of confusion,
+The distinction between the two parameterizations of genetic values
+is a constant source of confusion,
 so it is worth stating it plainly at the outset.
-They both describe the same variation of genetic values,
-but how these model parameterizations are used differs.
-The *genotypic parameterization* is a mathematical description of genetic biology
-without reference to a population and
-is usually used in "forwards" modelling (data generation from known parameters):
+They both describe the same variation of genetic values and are hence interchangeable,
+but what quantities these parameterizations provide and how these are commonly used differs.
+The *genotypic parameterization* is an attempt of
+a mathematical description of genetic biology without reference to a population and
+is commonly used in "forwards" modelling (data generation from known parameters):
 it describes how genotypes and their effects combine into genetic values.
-The *breeding value parameterization* is a mathematical description of genetic biology
-with reference to a population and
-is usually used in "backwards" or "inverse" modelling (parameter estimation from observed data):
+The *breeding value parameterization* is an attempt of
+a mathematical description of genetic biology with reference to a population and
+is commonly used in "backwards/inverse" modelling (parameter estimation from observed data):
 it describes how genetic values are statistically decomposed into
 breeding values and non-additive deviations.
-Because this decomposition depends on allele and genotype frequencies
-the same individuals and their genetic values can
+Because this decomposition depends on allele and genotype frequencies,
+genetic values of the same individuals can
 have different breeding values and non-additive deviations in different populations.
+Much of theory in quantitative genetics, evolution, and breeding
+uses the breeding value parameterization and is thence the focus in this article.
 
-All of the quantities described here are computed by `genParam` function,
+All of the quantities described below are computed by `genParam` function,
 which returns them for every trait in the simulation.
+User-friendly functions, such as `bv`, internally call `genParam`.
 
-## The genotypic model parameterization
+## The genotypic parameterization
 
 AlphaSimR builds the genetic value of an individual from biallelic loci
 using scaled genotype dosages following the *genotypic parameterization*.
@@ -81,19 +87,18 @@ while the epistatic sum is over the *pairs* of QTL.
 
 AlphaSimR assigns each QTL to exactly one epistatic pair,
 so these pairs are disjoint and the number of pairs is half the number of QTL.
-TODO{Chris check this sentence - do we need it and does it say anything useful}
-{This means the two-locus calculations described below
-can be carried out one pair at a time and summed.}
+This means the two-locus calculations described below
+can be carried out one pair at a time and summed.
 Note that the only modelled epistasis is additive-by-additive.
 Additive-by-dominance or dominance-by-dominance epistasis are not supported.
 
 Note that genetic values in AlphaSimR include the initial trait mean $\mu_0$,
-while standard literature often removes the trait mean of the population
+while standard literature often removes the trait mean of a population
 [@fisher_1919, @FalconerMackay].
-While this is just book-keeping, it is important what means are used
-when we evaluate genetic values across populations and time.
+While this difference only shifts the "baseline" of genetic values,
+it is convenient for seamless comparisons across populations and time.
 
-We will now demonstrate all this theory with a one locus example.
+We will now demonstrate this theory with a one locus example.
 First we simulate founder genomes and a trait.
 
 ```{r}
@@ -134,19 +139,23 @@ tmp[id, "gv"]
 tmp[id, "mu0"] + tmp[id, "xA_a"] + tmp[id, "xD_d"]
 ```
 
-## The breeding value model parameterization
+## The breeding value parameterization
 
+Under the *breeding value parameterization*
 AlphaSimR decomposes the genetic value of an individual with genotype $x$ into
-population mean $\bar{G}$, breeding value $A(x)$ and non-additive deviations $N(x)$
-using the *breeding value parameterization*:
+the population mean $\bar{G}$, breeding value $A(x)$, and non-additive deviations $N(x)$:
 
 $$G(x) = \bar{G} + A(x) + N(x).$$
+
 The breeding value of an individual is the part of its genetic value that
-it can transmit to its offspring under random mating in the population.
-Formally, it is the least-squares projection of the genetic value onto allele dosage,
-and the coefficient of that projection is the average effect of allele substitution,
-usually denoted as $\alpha$ [@FalconerMackay].
-We will turn attention to non-additive deviations later in the article
+it can transmit to offspring under random mating in the population
+[@FalconerMackay, @Falconer_85].
+Formally,
+it is the least-squares projection of the genetic value onto allele dosage in the population,
+and the coefficient of that projection is
+the average effect of allele substitution in the population,
+usually denoted as $\alpha$.
+We will turn attention to non-additive deviations later
 and now describe the concept of breeding value in more detail.
 
 Consider a single locus in a population where genotype dosage $x$ occurs
@@ -169,12 +178,9 @@ Three features of this definition deserve emphasis.
 First, $\alpha$ and hence also $A(x)$ are not a property of the locus alone.
 They depend on allele and genotype frequencies in a population
 and are hence population specific.
-A locus with a large dominance effect can
-have $\alpha = 0$ at one allele frequency and
-a substantial $\alpha$ at another.
 Second, when there is no non-additive genotypic effects,
 $G(x)$ is linear in $x$, the regression is exact, and
-$\alpha$ reduces to the additive genotypic effect rescaled by the dosage scaling.
+$\alpha$ reduces to the additive genotypic effect.
 Breeding values then account for all of the genetic variation.
 Third, breeding values are centred on the population mean by construction,
 since $\sum_x f(x)(x - \bar{x}) = 0$.
@@ -237,13 +243,13 @@ head(tmp)
 # ... genetic value for the individual i
 id = 2 # change to inspect other individuals
 tmp[id, "gv"]
-# ... and its genotypic parameterization
+# ... and its breeding value parameterization
 tmp[id, "meanGv"] + tmp[id, "bv"] + tmp[id, "dd"]
 
 # Mean of breeding values and deviations is (numerical) zero
 mean(ans$bv)
 mean(ans$dd)
-# While this is not the case for genotypic parameterization
+# ... while this is not the case for genotypic parameterization
 mean(ans$gv_a)
 mean(ans$gv_d)
 ```
@@ -253,11 +259,14 @@ breeding values parameterization of genetic values from @FalconerMackay.
 We will mirror AlphaSimR calculation by
 showing the projection of genetic values onto dosages.
 
+First, prepare all the ingredients.
+
 ```{r}
 gvs = ans$gv
-# also gv(po)
+# also gv(pop)
 meanGv = ans$mu
 # also mean(gv(pop))
+# also meanG(pop)
 
 dosage = popQtlGenos
 meanDosage = mean(dosage)
@@ -272,7 +281,7 @@ bvs = ans$bv
 # also x %*% ans$alpha[[1]]
 ```
 
-Now we have all the ingredients for the plot.
+Now the figure.
 
 ```{r}
 rangeY = range(c(gvs, meanGv + bvs))
@@ -287,11 +296,11 @@ points(meanGv + bvs ~ x, pch = 21, bg = "white")
 # ... deviations between genetic values and breeding values
 segments(x0 = x, x1 = x,
          y0 = gvs, y1 = meanGv + bvs)
-# ... mean of genetic values and dosages (plus)
+# ... mean of genetic values and dosages (plus symbol)
 points(meanGv ~ mean(x), pch = "+")
 ```
 
-It is instructive to inspect the same principles with more QTL.
+It is instructive to demonstrate the same principles with multiple QTL.
 
 ```
 founderPop = quickHaplo(nInd = 100, nChr = 1, segSites = 3)
@@ -311,10 +320,10 @@ tmp = apply(popQtlGenos, 2, table)
 # Deviation from Hardy-Weinberg equilibrium frequencies
 fObs - fHW
 
-# Calculate alpha, breeding values, etc.
+# Calculate the quantities
 ans = genParam(pop)
 
-# Alpha under
+# Alphas under
 head(ans$alpha[[1]])    # Observed frequencies
 head(ans$alpha_HW[[1]]) # Hardy-Weinberg frequencies
 
@@ -334,8 +343,8 @@ head(tmp)
 
 Once the breeding value has absorbed everything that can be explained by
 a linear regression on dosage, whatever is left over at that locus is the
-non-additive deviation. It is simply defined as a lack of fit and
-in the demonstration above this is the dominance deviation:
+non-additive deviation. It is simply defined as a lack of fit.
+In the demonstration above the dominance deviation is obtained as:
 
 $$D(x) = G(x) - A(x) - \bar{G},$$
 
@@ -354,8 +363,8 @@ This is a constant source of confusion [@hill_2008, @Hivert_2021].
 Breeding values $A(x)$ are a linear projection of genetic values $G(x)$ onto dosages $x$
 (capturing additive and partly also non-additive genotypic effects),
 while dominance deviations $D(x)$ are residuals of this projection
-(capturing the remainder of genetic values).
-These residuals are non-zero when there are non-zero dominance genotypic effects
+(capturing the remainder of genetic values when only additive and dominance effects exist).
+These residuals are non-zero when there are non-zero non-additive genotypic effects
 as these effects make $G(x)$ non-linear in $x$.
 
 ## Epistatic deviations
@@ -381,7 +390,7 @@ which is linear in $x_{A_i}$.
 The epistatic effect therefore shifts
 the marginal genetic value at the first locus ($i$) in
 a way that depends on the allele frequency at the second locus $(j)$.
-This is the mechanism by which epistasis contributes to breeding values
+This is the mechanism by which epistasis contributes to breeding values.
 and their variance (additive genetic variance).
 
 The average effect $\alpha_i$ and breeding values $A(x)_i$ for locus $i$
@@ -389,8 +398,8 @@ are then obtained from the marginal genetic values exactly as in the
 single-locus case with linear regression shown above, and
 the dominance deviations $D(x)_i$ are residuals from that regression.
 Because the marginalized epistatic contribution is linear in $x_{A_i}$,
-it is absorbed entirely by the linear regression and
-leaves the dominance deviation untouched.
+it is absorbed entirely by the linear regression for breeding values and
+leaves the dominance deviations untouched.
 Epistasis in this model generates additive and epistatic variance,
 but no dominance variance.
 
@@ -402,27 +411,29 @@ observed population, and the components that follow from it are
 correspondingly not quite orthogonal. This is why the covariances
 between the components are reported rather than assumed to be zero.
 
-TODO{Chris, review this paragraph}
-The consequence is a difference in labeling rather than a loss of
-variance. Under linkage disequilibrium, additive-by-additive effects
-induce a marginal dominance component, which a parameterization built on
-the joint two-locus genotype frequencies reports as dominance variance
-[@alvarezcastro_2019]. AlphaSimR cannot represent this. Because the
-marginalization makes the epistatic contribution exactly linear in a
-locus's own dosage, a trait with no dominance effects has dominance
+The consequence is a difference in
+labeling decompositions of genetic variance
+rather than a loss of variance.
+Under linkage disequilibrium,
+additive-by-additive effects induce a marginal dominance component,
+which a parameterization built on the joint two-locus genotype frequencies
+reports as dominance variance [@alvarezcastro_2019].
+AlphaSimR cannot represent this.
+Because the marginalization makes the epistatic contribution exactly linear
+in a locus's own dosage, a trait with no dominance effects has dominance
 deviations of exactly zero however strong the disequilibrium, and the
 variance in question is reported as additive-by-additive instead.
-The total is however unaffected: $G(x) = \bar{G} + A(x) + D(x) + AA(x)$.
+The genetic values and their variance are however unaffected
+because $G(x) = \bar{G} + A(x) + D(x) + AA(x)$.
 
-TODO{Chris, review this paragraph}
-Two things limit how much this matters in practice.
+Two things limit how much this consequence matters in practice.
 AlphaSimR assigns QTL to pairs by a random permutation across the genome,
 so the two loci of a pair usually sit on different chromosomes and any
 disequilibrium between them is generated by drift and selection rather
 than by linkage. And when both loci have an allele frequency of one
 half, as every segregating locus does in a bi-parental population derived
 from two inbred parents, the average effects computed here are exact
-whatever the disequilibrium.
+whatever the disequilibrium. See also TODO: cite Hill!?
 
 ### The second stage calculates the epistatic deviations
 
@@ -457,6 +468,14 @@ resid = ans$gv[, 1] - (ans$mu[1] + ans$bv[, 1] + ans$dd[, 1] + ans$aa[, 1])
 mean(resid) # numerical zero
 ```
 
+AlphaSimR also reports the sum of all non-additive deviations.
+
+```{r}
+# G = mu + A + D + AA = mu + A + N, for every individual
+resid = (ans$dd[, 1] + ans$aa[, 1]) - ans$nd[, 1]
+mean(resid) # numerical zero
+```
+
 ## Partitioning the variance
 
 Having decomposed genetic values of individuals,
@@ -488,7 +507,7 @@ var(gv(pop[1:nSmall])) * (nSmall - 1) / nSmall
 var(gv(pop[1:nSmall]))
 ```
 
-Having access to breeding values and non-additive components,
+Having access to breeding values and non-additive deviations,
 we can calculate their variances and covariances in the same way.
 AlphaSimR does this for three different "reference" populations,
 and understanding these is the key to understanding the output of `genParam`.
@@ -523,15 +542,24 @@ varAA(pop)
 # also popVar(aa(pop))
 # also ans$varAA
 
+# Non-additive genetic variance
+# = variance of non-additive deviations
+varN(pop)
+# also var(nd(pop)) * k
+# also popVar(nd(pop))
+# also ans$varN
+
 # Covariances
-# Because G = A + D + ... then
-# varG = varA + varD + 2covAD + ...
-(tmp = popVar(cbind(bv(pop), dd(pop), aa(pop))))
+# Because G = A + D + ... = A + N then
+# varG = varA + varD + 2covAD + ... = varA + varN + 2covAN
+(tmp = popVar(cbind(bv(pop), dd(pop), aa(pop), nd(pop))))
 # also cov(bv(pop), dd(pop)) * k
 # also cov(bv(pop), aa(pop)) * k
 # also cov(dd(pop), aa(pop)) * k
+# also cov(bv(pop), nd(pop)) * k
 varG(pop)
-sum(tmp)
+sum(tmp[1:3, 1:3])
+sum(tmp[c(1,4), c(1,4)])
 ```
 
 The **linkage-equilibrium population** has the same genotype
@@ -564,34 +592,38 @@ Because breeding values and deviations have mean zero,
 these sums of squares are variances.
 Genetic genic variance is then sum of the component genic variances.
 
-## The Bulmer partitioning TODO
+## The Bulmer partitioning
 
 The genetic variance and the genic variance differ,
 and the difference between them is informative.
-Selection and non-random mating change the genetic variance of a population
-long before they change its allele frequencies,
-because they generate correlations between loci and
-departures from Hardy-Weinberg proportions.
+Non-random mating and selection change the genetic variance of a population
+long before its allele frequencies change,
+because they generate
+departures from Hardy-Weinberg proportions and
+correlations between loci.
 This is the Bulmer effect, described by @bulmer_1971, and
 it is the reason a breeding program has lower genetic variance
 than allele-frequencies alone suggest.
-Part of this  recombination reveals some the .
+Recombination of the existing genomes in a breesing programme
+reveals some this "hidden" genetic variance.
 
-`genParam` reports the difference as two separate covariance terms, so
-that for each component
+`genParam` reports the difference as two separate covariance terms,
+so that for additive genetic varince we have:
 
 $$\sigma^{2}_{A} = \sigma^{2}_{A,\text{genic}} +
-\text{cov}_{A,HW} + \text{cov}_{A,L}$$
+\text{cov}_{A,HW} + \text{cov}_{A,L},$$
 
 with the analogous identity for the dominance and epistatic components.
 The three terms are:
 
 `genicVarA`, the variance of an idealized population at the same allele
-frequencies, randomly mated and in linkage equilibrium. This changes only
-when allele frequencies change, through selection, drift or mutation.
+frequencies, randomly mated, and in linkage equilibrium.
+This varince changes only when allele frequencies change,
+through selection, drift, or mutation.
 
-`covA_HW`, the covariance arising from departures from Hardy-Weinberg
-proportions. It is computed as the difference between the genic variance
+`covA_HW`, the covariance due to departures from Hardy-Weinberg genotype frequencies.
+TODO
+It is computed as the difference between the genic variance
 evaluated at the observed genotype frequencies and the genic variance
 evaluated at Hardy-Weinberg genotype frequencies. Inbreeding makes this
 term positive for the additive component: an inbred population has more
@@ -656,6 +688,8 @@ round(c(varA_before = before$varA[1,1],
         covL_before = before$covA_L[1],
         covL_after = after$covA_L[1]), 3)
 ```
+
+add within ns betqeen fmil varince?
 
 ## Polyploids and digenic dominance
 
@@ -768,6 +802,8 @@ frequency 0.5 in linkage equilibrium; observed ratios in a simulated
 population will typically be smaller, sometimes much smaller. This is not
 an artifact of the implementation but a property of the decomposition
 itself.
+
+# TODO: Another vignette on GCA and SCA!? Signal this at the top
 
 ## References
 
